@@ -15,6 +15,11 @@ import scala.concurrent.ExecutionContext
 @Singleton
 class DebugController @Inject()(onlyDebug: OnlyDebug, backlogApiAccessor: BacklogApiAccessor, gitCommandExecutor: GitCommandExecutor)(implicit ec: ExecutionContext) extends InjectedController {
 
+  def queryUsers(projectId: String, apiKey: String): Action[AnyContent] = onlyDebug.async {
+    backlogApiAccessor.queryProjectUsersAsJson(projectId, apiKey)
+      .map(Ok(_))
+  }
+
   def queryGitRepositories(projectId: String, apiKey: String): Action[AnyContent] = onlyDebug.async {
     backlogApiAccessor.queryGitRepositoriesAsJson(projectId, apiKey)
       .map(Ok(_))
