@@ -8,6 +8,10 @@ import services.{BacklogApiAccessor, GitCommandExecutor}
 
 import scala.concurrent.ExecutionContext
 
+/**
+  * デバッグ用の操作を実装する。
+  * 本番環境 [[play.api.Mode.Prod]] で使用されないように、すべてのアクションに [[actions.OnlyDebug]] を適用する。
+  */
 @Singleton
 class DebugController @Inject()(onlyDebug: OnlyDebug, backlogApiAccessor: BacklogApiAccessor, gitCommandExecutor: GitCommandExecutor)(implicit ec: ExecutionContext) extends InjectedController {
 
