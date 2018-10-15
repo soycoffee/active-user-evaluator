@@ -4,14 +4,14 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 import javax.inject._
-import play.api.{Configuration, Logger}
 import play.api.libs.json.JsValue
 import play.api.libs.ws.WSClient
+import play.api.{Configuration, Logger}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class GitHubSearcher @Inject()(implicit ws: WSClient, configuration: Configuration, ec: ExecutionContext) {
+class GitHubApiAccessor @Inject()(implicit ws: WSClient, configuration: Configuration, ec: ExecutionContext) {
 
   private val baseApiUrl = "https://api.github.com"
   private val logger = Logger(this.getClass)
