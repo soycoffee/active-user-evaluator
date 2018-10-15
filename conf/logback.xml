@@ -26,7 +26,8 @@
 
   <logger name="play" level="INFO" />
   <logger name="application" level="DEBUG" />
-  <logger name="services.GitHubSearcher" level="DEBUG" />
+  <logger name="services.BacklogApiAccessor" level="DEBUG" />
+  <logger name="services.GitCommandExecutor" level="DEBUG" />
 
   <!-- Off these ones as they are annoying, and anyway we manage configuration ourselves -->
   <logger name="com.avaje.ebean.config.PropertyMapLoader" level="OFF" />
