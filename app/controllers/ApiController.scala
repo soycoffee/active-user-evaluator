@@ -21,7 +21,7 @@ class ApiController @Inject()(backlogApiAccessor: BacklogApiAccessor, gitCommand
           Json.obj(
             "commits_count" -> commitsCount,
             "additions_count" -> changesCountSummary.addition,
-            "deletions_count" -> changesCountSummary.deletion
+            "deletions_count" -> changesCountSummary.deletion,
           )
         }).get
       })
