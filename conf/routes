@@ -1,4 +1,5 @@
 GET / controllers.ApiController.index(projectId: String, apiKey: String, authors: String, sinceBeforeDays: Int)
 
+GET /query-users controllers.DebugController.queryUsers(projectId: String, apiKey: String)
 GET /query-git-repositories controllers.DebugController.queryGitRepositories(projectId: String, apiKey: String)
 GET /fetch-git-repositories controllers.DebugController.fetchGitRepositories(projectId: String, apiKey: String)
