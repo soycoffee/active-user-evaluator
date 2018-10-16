@@ -38,7 +38,7 @@ class GitCommandExecutor @Inject()(implicit temporaryFileCreator: TemporaryFileC
 
   def readChangesCountSummary(repositoryPath: Path, author: String, sinceBeforeDays: Int): Try[ChangesCountSummary] =
     execute(
-      (baseCommand(repositoryPath) ++ Seq("log", "--numstat", "--pretty", """"%H"""") ++ countOptions(author, sinceBeforeDays)) #|
+      (baseCommand(repositoryPath) ++ Seq("log", "--numstat", "--pretty=\"%H\"") ++ countOptions(author, sinceBeforeDays)) #|
       "awk 'NF==3 {plus+=$1; minus+=$2} END {printf(\"%d %d\", plus, minus)}'"
     )
       .map(_.trim.split(" ") match {
@@ -51,10 +51,10 @@ class GitCommandExecutor @Inject()(implicit temporaryFileCreator: TemporaryFileC
   }
 
   private def baseCommand(directoryPath: Path) =
-    Seq("git", "-C", s""""$directoryPath"""")
+    Seq("git", "-C", s"""$directoryPath""")
 
   private def countOptions(author: String, sinceBeforeDays: Int) =
-    Seq("--no-merges", "--branches" , "--author", s""""$author"""", "--since", beforeDayStringFromToday(sinceBeforeDays))
+    Seq("--no-merges", "--branches" , "--author", s"""$author""", "--since", beforeDayStringFromToday(sinceBeforeDays))
 
 }
 
