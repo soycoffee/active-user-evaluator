@@ -12,7 +12,7 @@ import play.api.libs.Files.TemporaryFileCreator
 import scala.util.Try
 
 @Singleton
-class GitCommandExecutor @Inject()(implicit temporaryFileCreator: TemporaryFileCreator) {
+class GitCommandExecutor @Inject()(temporaryFileCreator: TemporaryFileCreator) {
 
   import GitCommandExecutor._
 

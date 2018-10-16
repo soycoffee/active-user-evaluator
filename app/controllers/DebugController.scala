@@ -20,6 +20,11 @@ class DebugController @Inject()(onlyDebug: OnlyDebug, backlogApiAccessor: Backlo
       .map(Ok(_))
   }
 
+  def queryActivities(userId: Long, apiKey: String): Action[AnyContent] = onlyDebug.async {
+    backlogApiAccessor.queryUsersActivitiesAsJson(userId, apiKey)
+      .map(Ok(_))
+  }
+
   def queryGitRepositories(projectId: String, apiKey: String): Action[AnyContent] = onlyDebug.async {
     backlogApiAccessor.queryGitRepositoriesAsJson(projectId, apiKey)
       .map(Ok(_))

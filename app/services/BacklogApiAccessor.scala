@@ -8,11 +8,11 @@ import play.api.libs.ws.WSClient
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class BacklogApiAccessor @Inject()(implicit ws: WSClient, ec: ExecutionContext) {
+class BacklogApiAccessor @Inject()(ws: WSClient)(implicit ec: ExecutionContext) {
 
   import BacklogApiAccessor._
 
-  private val baseApiUrl = "https://nulab-exam.backlog.jp/api/v2"
+  private val baseApiUrl = "https://besnamfin.backlog.com/api/v2"
   private val logger = Logger(this.getClass)
 
   def queryProjectUsers(projectId: String, apiKey: String): Future[Seq[User]] =
@@ -21,6 +21,9 @@ class BacklogApiAccessor @Inject()(implicit ws: WSClient, ec: ExecutionContext) 
 
   def queryProjectUsersAsJson(projectId: String, apiKey: String): Future[JsValue] =
     access("GET", s"/projects/$projectId/users", apiKey)
+
+  def queryUsersActivitiesAsJson(userId: Long, apiKey: String): Future[JsValue] =
+    access("GET", s"/users/$userId/activities", apiKey)
 
   def queryGitRepositories(projectId: String, apiKey: String): Future[Seq[GitRepository]] =
     queryGitRepositoriesAsJson(projectId, apiKey)
@@ -50,7 +53,7 @@ object BacklogApiAccessor {
   private implicit val gitRepositoryReads: Reads[GitRepository] = Json.reads[GitRepository]
   private implicit val userReads: Reads[User] = Json.reads[User]
 
-  private abstract class ActivityType(id: Int)
+  private abstract class ActivityType(id: Int, point: Int = 1)
 
   private object ActivityType {
 
