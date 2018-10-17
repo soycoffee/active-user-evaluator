@@ -17,6 +17,9 @@ class ApiDefinitionRepository @Inject()(protected val dbConfigProvider: Database
   def all(): Future[Seq[ApiDefinition]] =
     db.run(ApiDefinitions.result)
 
+  def findByKey(key: String): Future[Option[ApiDefinition]] =
+    db.run(ApiDefinitions.filter(_.key === key).result.headOption)
+
   def insert(apiDefinition: ApiDefinition): Future[ApiDefinition] =
     db.run(ApiDefinitions += apiDefinition).map(_ => apiDefinition)
 

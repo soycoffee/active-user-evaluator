@@ -12,39 +12,36 @@ class BacklogApiAccessor @Inject()(ws: WSClient)(implicit ec: ExecutionContext) 
 
   import BacklogApiAccessor._
 
-  private val baseApiUrl = "https://besnamfin.backlog.com/api/v2"
   private val logger = Logger(this.getClass)
 
-  def queryProjectUsers(projectId: String, apiKey: String): Future[Seq[User]] =
-    queryProjectUsersAsJson(projectId, apiKey)
+  def queryProjectUsers(projectId: String)(implicit destination: Destination): Future[Seq[User]] =
+    queryProjectUsersAsJson(projectId)
       .map(_.as[Seq[User]])
 
-  def queryProjectUsersAsJson(projectId: String, apiKey: String): Future[JsValue] =
-    access("GET", s"/projects/$projectId/users", apiKey)
+  def queryProjectUsersAsJson(projectId: String)(implicit destination: Destination): Future[JsValue] =
+    access("GET", s"/projects/$projectId/users")
 
-  def queryUsersActivitiesAsJson(userId: Long, apiKey: String): Future[JsValue] =
-    access("GET", s"/users/$userId/activities", apiKey)
+  def queryUsersActivitiesAsJson(userId: Long)(implicit destination: Destination): Future[JsValue] =
+    access("GET", s"/users/$userId/activities")
 
-  def queryGitRepositories(projectId: String, apiKey: String): Future[Seq[GitRepository]] =
-    queryGitRepositoriesAsJson(projectId, apiKey)
-      .map(_.as[Seq[GitRepository]])
-
-  def queryGitRepositoriesAsJson(projectId: String, apiKey: String): Future[JsValue] =
-    access("GET", s"/projects/$projectId/git/repositories", apiKey)
-
-  private def access(method: String, endPoint: String, apiKey: String): Future[JsValue] = {
-    val request = ws.url(s"$baseApiUrl$endPoint")
+  private def access(method: String, path: String)(implicit destination: Destination): Future[JsValue] = {
+    val request = ws.url(apiUrl(destination.domain, path))
       .withMethod(method)
-      .withQueryStringParameters("apiKey" -> apiKey)
+      .withQueryStringParameters("apiKey" -> destination.key)
     logger.info(s"Access Backlog: ${request.url}")
     request
       .execute()
       .map(_.body[JsValue])
   }
 
+  private def apiUrl(domain: String, endPoint: String) =
+    s"https://$domain/api/v2$endPoint"
+
 }
 
 object BacklogApiAccessor {
+
+  case class Destination(domain: String, key: String)
 
   case class User(httpUrl: String)
 
