@@ -1,14 +1,11 @@
 # --- !Ups
 
-CREATE TABLE users (
-    id bigint(20) NOT NULL AUTO_INCREMENT,
-    email varchar(255) NOT NULL,
-    password varchar(255) NOT NULL,
-    fullname varchar(255) NOT NULL,
-    isAdmin boolean NOT NULL,
-    PRIMARY KEY (id)
+CREATE TABLE API_DEFINITIONS (
+    KEY varchar(255) NOT NULL PRIMARY KEY,
+    BACKLOG_DOMAIN varchar(255) NOT NULL,
+    BACKLOG_API_KEY varchar(255) NOT NULL,
 );
 
 # --- !Downs
 
-DROP TABLE users;
+DROP TABLE API_DEFINITIONS;
