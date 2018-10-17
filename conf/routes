@@ -1,5 +1,5 @@
 #GET / controllers.ApiController.index(projectId: String, apiKey: String, authors: String, sinceBeforeDays: Int)
 GET / controllers.ApiController.index()
 
-GET /debug/backlog/users controllers.debug.BacklogController.queryUsers(projectId: String, apiKey: String)
-GET /debug/backlog/activities controllers.debug.BacklogController.queryActivities(userId: Long, apiKey: String)
+GET /debug/backlog/projects/:projectId/users controllers.debug.BacklogController.queryUsers(projectId: String, apiKey: String)
+GET /debug/backlog/users/:userId/activities controllers.debug.BacklogController.queryActivities(userId: Long, apiKey: String)
