@@ -9,9 +9,9 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class UseApiDestination @Inject()(apiDefinitionRepository: ApiDefinitionRepository)(implicit ec: ExecutionContext) {
 
-  def apply(apiKey: String)(f: BacklogApiAccessor.Destination => Future[Result]): Future[Result] = {
+  def apply(apiKey: String)(f: BacklogApiClient.Destination => Future[Result]): Future[Result] = {
     apiDefinitionRepository.findByKey(apiKey).map({
-      case Some(apiDefinition) => f(BacklogApiAccessor.Destination(apiDefinition.backlogDomain, apiDefinition.backlogApiKey))
+      case Some(apiDefinition) => f(BacklogApiClient.Destination(apiDefinition.backlogDomain, apiDefinition.backlogApiKey))
       case None => Future.successful(NotFound)
     }).flatten
   }

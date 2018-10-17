@@ -9,9 +9,9 @@ import play.api.libs.ws.WSClient
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class BacklogApiAccessor @Inject()(ws: WSClient)(implicit ec: ExecutionContext) {
+class BacklogApiClient @Inject()(ws: WSClient)(implicit ec: ExecutionContext) {
 
-  import BacklogApiAccessor._
+  import BacklogApiClient._
 
   private val logger = Logger(this.getClass)
 
@@ -44,7 +44,7 @@ class BacklogApiAccessor @Inject()(ws: WSClient)(implicit ec: ExecutionContext) 
 
 }
 
-object BacklogApiAccessor {
+object BacklogApiClient {
 
   case class Destination(domain: String, key: String)
 
