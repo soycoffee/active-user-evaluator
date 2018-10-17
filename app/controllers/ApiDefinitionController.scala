@@ -7,11 +7,18 @@ import play.api.Configuration
 import play.api.libs.json.Json
 import play.api.mvc.Security.AuthenticatedBuilder
 import play.api.mvc._
+import services.ApiDefinitionInitializer
 
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class ApiDefinitionController @Inject()(apiDefinitionDao: ApiDefinitionDao, operationKeyAuthenticated: OperationKeyAuthenticated)(implicit ec: ExecutionContext) extends InjectedController {
+class ApiDefinitionController @Inject()(
+                                         apiDefinitionDao: ApiDefinitionDao,
+                                         apiDefinitionInitializer: ApiDefinitionInitializer,
+                                         operationKeyAuthenticated: OperationKeyAuthenticated,
+                                       )(implicit ec: ExecutionContext) extends InjectedController {
+
+  apiDefinitionInitializer()
 
   def index: Action[AnyContent] = operationKeyAuthenticated.async {
     apiDefinitionDao.all()
