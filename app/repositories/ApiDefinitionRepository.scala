@@ -1,4 +1,4 @@
-package dao
+package repositories
 
 import scala.concurrent.{ ExecutionContext, Future }
 import javax.inject.Inject
@@ -8,15 +8,17 @@ import play.api.db.slick.DatabaseConfigProvider
 import play.api.db.slick.HasDatabaseConfigProvider
 import slick.jdbc.JdbcProfile
 
-class ApiDefinitionDao @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)(implicit executionContext: ExecutionContext) extends HasDatabaseConfigProvider[JdbcProfile] {
+class ApiDefinitionRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext) extends HasDatabaseConfigProvider[JdbcProfile] {
 
   import profile.api._
 
   private val ApiDefinitions = TableQuery[ApiDefinitionsTable]
 
-  def all(): Future[Seq[ApiDefinition]] = db.run(ApiDefinitions.result)
+  def all(): Future[Seq[ApiDefinition]] =
+    db.run(ApiDefinitions.result)
 
-  def insert(apiDefinition: ApiDefinition): Future[Unit] = db.run(ApiDefinitions += apiDefinition).map { _ => () }
+  def insert(apiDefinition: ApiDefinition): Future[ApiDefinition] =
+    db.run(ApiDefinitions += apiDefinition).map(_ => apiDefinition)
 
   private class ApiDefinitionsTable(tag: Tag) extends Table[ApiDefinition](tag, "API_DEFINITIONS") {
 

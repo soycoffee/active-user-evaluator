@@ -1,6 +1,6 @@
 package services
 
-import dao.ApiDefinitionDao
+import repositories.ApiDefinitionRepository
 import javax.inject.Inject
 import models.ApiDefinition
 
@@ -12,7 +12,7 @@ trait ApiDefinitionInitializer {
 
 object ApiDefinitionInitializer {
 
-  class Dev @Inject()(apiDefinitionDao: ApiDefinitionDao) extends ApiDefinitionInitializer {
+  class Dev @Inject()(apiDefinitionDao: ApiDefinitionRepository) extends ApiDefinitionInitializer {
 
     override def apply(): Unit =
       Seq(

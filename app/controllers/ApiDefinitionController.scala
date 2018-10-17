@@ -1,8 +1,9 @@
 package controllers
 
 import controllers.ApiDefinitionController.OperationKeyAuthenticated
-import dao.ApiDefinitionDao
+import repositories.ApiDefinitionRepository
 import javax.inject._
+import models.ApiDefinition
 import play.api.Configuration
 import play.api.libs.json.Json
 import play.api.mvc.Security.AuthenticatedBuilder
@@ -13,15 +14,22 @@ import scala.concurrent.ExecutionContext
 
 @Singleton
 class ApiDefinitionController @Inject()(
-                                         apiDefinitionDao: ApiDefinitionDao,
+                                         parse: PlayBodyParsers,
+                                         apiDefinitionDao: ApiDefinitionRepository,
                                          apiDefinitionInitializer: ApiDefinitionInitializer,
                                          operationKeyAuthenticated: OperationKeyAuthenticated,
                                        )(implicit ec: ExecutionContext) extends InjectedController {
 
   apiDefinitionInitializer()
 
-  def index: Action[AnyContent] = operationKeyAuthenticated.async {
+  def query: Action[AnyContent] = operationKeyAuthenticated.async {
     apiDefinitionDao.all()
+      .map(Json.toJson(_))
+      .map(Ok(_))
+  }
+
+  def create: Action[ApiDefinition] = operationKeyAuthenticated.async(parse.json(ApiDefinition.format)) { request =>
+    apiDefinitionDao.insert(request.body)
       .map(Json.toJson(_))
       .map(Ok(_))
   }
