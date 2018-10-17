@@ -1,7 +1,5 @@
 #GET / controllers.ApiController.index(projectId: String, apiKey: String, authors: String, sinceBeforeDays: Int)
 GET / controllers.ApiController.index()
 
-GET /query-users controllers.DebugController.queryUsers(projectId: String, apiKey: String)
-GET /query-activities controllers.DebugController.queryActivities(userId: Long, apiKey: String)
-GET /query-git-repositories controllers.DebugController.queryGitRepositories(projectId: String, apiKey: String)
-GET /fetch-git-repositories controllers.DebugController.fetchGitRepositories(projectId: String, apiKey: String)
+GET /debug/backlog/users controllers.debug.BacklogController.queryUsers(projectId: String, apiKey: String)
+GET /debug/backlog/activities controllers.debug.BacklogController.queryActivities(userId: Long, apiKey: String)
