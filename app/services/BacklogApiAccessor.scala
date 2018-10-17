@@ -1,6 +1,7 @@
 package services
 
 import javax.inject._
+import models.User
 import play.api.Logger
 import play.api.libs.json.{JsValue, Json, Reads}
 import play.api.libs.ws.WSClient
@@ -20,6 +21,10 @@ class BacklogApiAccessor @Inject()(ws: WSClient)(implicit ec: ExecutionContext) 
 
   def queryProjectUsersAsJson(projectId: String)(implicit destination: Destination): Future[JsValue] =
     access("GET", s"/projects/$projectId/users")
+
+  def queryUsersActivities(projectId: String)(implicit destination: Destination): Future[Seq[User]] =
+    queryProjectUsersAsJson(projectId)
+      .map(_.as[Seq[User]])
 
   def queryUsersActivitiesAsJson(userId: Long)(implicit destination: Destination): Future[JsValue] =
     access("GET", s"/users/$userId/activities")
@@ -42,58 +47,5 @@ class BacklogApiAccessor @Inject()(ws: WSClient)(implicit ec: ExecutionContext) 
 object BacklogApiAccessor {
 
   case class Destination(domain: String, key: String)
-
-  case class User(httpUrl: String)
-
-  case class GitRepository(httpUrl: String)
-
-  private implicit val gitRepositoryReads: Reads[GitRepository] = Json.reads[GitRepository]
-  private implicit val userReads: Reads[User] = Json.reads[User]
-
-  private abstract class ActivityType(id: Int, point: Int = 1)
-
-  private object ActivityType {
-
-    case object CreateIssue extends ActivityType(1)
-    case object UpdateIssue extends ActivityType(2)
-    case object CreateIssueComment extends ActivityType(3)
-    case object CreateWiki extends ActivityType(5)
-    case object UpdateWiki extends ActivityType(6)
-    case object CreateFile extends ActivityType(8)
-    case object UpdateFile extends ActivityType(9)
-    case object CreateGitPush extends ActivityType(12)
-    case object CreateGitRepository extends ActivityType(13)
-    case object UpdateMultiIssue extends ActivityType(14)
-    case object CreatePullRequest extends ActivityType(18)
-    case object UpdatePullRequest extends ActivityType(19)
-    case object CreatePullRequestComment extends ActivityType(20)
-    case object CreateVersion extends ActivityType(22)
-    case object UpdateVersion extends ActivityType(23)
-
-    val ManagementItems = Seq(
-      CreateIssue,
-      UpdateIssue,
-      CreateIssueComment,
-      UpdateMultiIssue,
-      CreateVersion,
-      UpdateVersion
-    )
-
-    val DocumentItems = Seq(
-      CreateWiki,
-      UpdateWiki,
-      CreateFile,
-      UpdateFile,
-    )
-
-    val ImplementItems = Seq(
-      CreateGitPush,
-      CreateGitRepository,
-      CreatePullRequest,
-      UpdatePullRequest,
-      CreatePullRequestComment,
-    )
-
-  }
 
 }
