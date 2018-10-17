@@ -73,7 +73,7 @@ object BacklogApiAccessor {
     case object CreateVersion extends ActivityType(22)
     case object UpdateVersion extends ActivityType(23)
 
-    val managementItems = Seq(
+    val ManagementItems = Seq(
       CreateIssue,
       UpdateIssue,
       CreateIssueComment,
@@ -82,14 +82,14 @@ object BacklogApiAccessor {
       UpdateVersion
     )
 
-    val documentItems = Seq(
+    val DocumentItems = Seq(
       CreateWiki,
       UpdateWiki,
       CreateFile,
       UpdateFile,
     )
 
-    val implementItems = Seq(
+    val ImplementItems = Seq(
       CreateGitPush,
       CreateGitRepository,
       CreatePullRequest,
