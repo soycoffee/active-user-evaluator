@@ -36,7 +36,6 @@ class BacklogApiClientSpec extends PlaySpec with GuiceOneServerPerSuite with Moc
     val wsResponse = mock[WSResponse]
     Mockito.when(wsClient.url(ArgumentMatchers.any())) thenReturn wsRequest
     Mockito.when(wsRequest.withMethod(ArgumentMatchers.any())) thenReturn wsRequest
-    Mockito.when(wsRequest.withQueryStringParameters(ArgumentMatchers.any())) thenReturn wsRequest
     Mockito.when(wsRequest.execute()) thenReturn Future.successful(wsResponse)
     Mockito.when(wsResponse.body[JsValue](ArgumentMatchers.any())) thenReturn body
     (wsClient, wsRequest, wsResponse)
@@ -57,9 +56,8 @@ class BacklogApiClientSpec extends PlaySpec with GuiceOneServerPerSuite with Moc
     users mustBe Seq(
       User(1, "userId", "name"),
     )
-    Mockito.verify(wsClient).url(ArgumentMatchers.eq("https://example.com/api/v2/projects/1/users"))
+    Mockito.verify(wsClient).url(ArgumentMatchers.eq("https://example.com/api/v2/projects/1/users?apiKey=key"))
     Mockito.verify(wsRequest).withMethod(ArgumentMatchers.eq("GET"))
-    Mockito.verify(wsRequest).withQueryStringParameters(ArgumentMatchers.argThat[Seq[(String, String)]](_ == Seq("apiKey" -> "key")): _*)
   }
 
   "queryUserActivities" in {
@@ -75,7 +73,7 @@ class BacklogApiClientSpec extends PlaySpec with GuiceOneServerPerSuite with Moc
       ),
     )
     val backlogApiClient = new BacklogApiClient(wsClient)
-    val activities = await(backlogApiClient.queryUserActivities(1))
+    val activities = await(backlogApiClient.queryUserActivities(1, Activity.Type.CreateIssue))
     activities mustBe Seq(
       Activity(
         Activity.Type.CreateIssue,
@@ -85,9 +83,8 @@ class BacklogApiClientSpec extends PlaySpec with GuiceOneServerPerSuite with Moc
         ),
       ),
     )
-    Mockito.verify(wsClient).url(ArgumentMatchers.eq("https://example.com/api/v2/users/1/activities"))
+    Mockito.verify(wsClient).url(ArgumentMatchers.eq("https://example.com/api/v2/users/1/activities?activityTypeId[]=1&apiKey=key"))
     Mockito.verify(wsRequest).withMethod(ArgumentMatchers.eq("GET"))
-    Mockito.verify(wsRequest).withQueryStringParameters(ArgumentMatchers.argThat[Seq[(String, String)]](_ == Seq("apiKey" -> "key")): _*)
   }
 
 }

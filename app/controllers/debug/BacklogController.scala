@@ -2,6 +2,7 @@ package controllers.debug
 
 import actions.OnlyDebug
 import javax.inject._
+import models.Activity
 import play.api.mvc._
 import services.{BacklogApiClient, UseApiDestination}
 
@@ -17,9 +18,9 @@ class BacklogController @Inject()(onlyDebug: OnlyDebug, backlogApiClient: Backlo
     }
   }
 
-  def queryActivities(userId: Long, apiKey: String): Action[AnyContent] = onlyDebug.async {
+  def queryActivities(userId: Long, activityTypeId: Int, apiKey: String): Action[AnyContent] = onlyDebug.async {
     useApiDestination(apiKey) { implicit destination =>
-      backlogApiClient.queryUserActivitiesAsJson(userId)
+      backlogApiClient.queryUserActivitiesAsJson(userId, Activity.Type.Values.find(_.id == activityTypeId).get)
         .map(Ok(_))
     }
   }

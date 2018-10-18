@@ -6,6 +6,7 @@ import play.api.Logger
 import play.api.libs.json.JsValue
 import play.api.libs.ws.WSClient
 
+import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -20,20 +21,19 @@ class BacklogApiClient @Inject()(ws: WSClient)(implicit ec: ExecutionContext) {
       .map(_.as[Seq[User]])
 
   def queryProjectUsersAsJson(projectId: String)(implicit destination: Destination): Future[JsValue] =
-    access("GET", s"/projects/$projectId/users")
+    access("GET", makeApiUrl(s"/projects/$projectId/users"))
 
-  def queryUserActivities(userId: Long)(implicit destination: Destination): Future[Seq[Activity]] =
-    queryUserActivitiesAsJson(userId)
+  def queryUserActivities(userId: Long, `type`: Activity.Type)(implicit destination: Destination): Future[Seq[Activity]] =
+    queryUserActivitiesAsJson(userId, `type`)
       .map(_.as[Seq[Activity]])
 
-  def queryUserActivitiesAsJson(userId: Long)(implicit destination: Destination): Future[JsValue] =
-    access("GET", s"/users/$userId/activities")
+  def queryUserActivitiesAsJson(userId: Long, `type`: Activity.Type)(implicit destination: Destination): Future[JsValue] =
+    access("GET", makeApiUrl(s"/users/$userId/activities", "activityTypeId[]" -> s"${`type`.id}"))
 
-  private def access(method: String, path: String)(implicit destination: Destination): Future[JsValue] = {
-    val request = ws.url(apiUrl(destination.domain, path))
+  private def access(method: String, url: String): Future[JsValue] = {
+    val request = ws.url(url)
       .withMethod(method)
-      .withQueryStringParameters("apiKey" -> destination.key)
-    logger.info(s"Access Backlog: ${request.url}")
+    logger.info(s"Access Backlog: ${request.method} ${request.uri}")
     request
       .execute()
       .map(_.body[JsValue])
@@ -41,6 +41,16 @@ class BacklogApiClient @Inject()(ws: WSClient)(implicit ec: ExecutionContext) {
 
   private def apiUrl(domain: String, endPoint: String) =
     s"https://$domain/api/v2$endPoint"
+
+  // WsClient で Query String を付加するとエンコードされてしまうため、直接URLに含める。
+  private def makeApiUrl(path: String, queryStringParameters: (String, String)*)(implicit destination: Destination) =
+    s"https://${destination.domain}/api/v2$path${makeQueryString(queryStringParameters :+ "apiKey" -> destination.key: _*)}"
+
+  private def makeQueryString(parameters: (String, String)*): String =
+    parameters match {
+      case Seq() => ""
+      case Seq((headKey, headValue), tail @ _*) => s"?$headKey=$headValue" + tail.map(tupled((key, value) => s"&$key=$value")).mkString
+    }
 
 }
 

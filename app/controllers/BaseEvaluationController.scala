@@ -1,7 +1,7 @@
 package controllers
 
 import models._
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json.Json
 import play.api.mvc._
 import services.{ActivityPointAggregator, BacklogApiClient, UseApiDestination}
 
@@ -9,19 +9,18 @@ import scala.concurrent.{ExecutionContext, Future}
 
 trait BaseEvaluationController extends BaseController {
 
-  import Activity.writes
-  import User.format
-
   val useApiDestination: UseApiDestination
   val backlogApiClient: BacklogApiClient
   val activityPointAggregator: ActivityPointAggregator
   implicit val ec: ExecutionContext
 
+  val targetActivityTypes: Seq[Activity.Type]
+
   def index(projectId: String, sinceBeforeDays: Option[Int], apiKey: String): Action[AnyContent] = Action.async {
     useApiDestination(apiKey) { implicit destination =>
       backlogApiClient.queryProjectUsers(projectId).map({ users =>
         users.map({ user =>
-          backlogApiClient.queryUserActivities(user.id).map({ activities =>
+          backlogApiClient.queryUserActivities(user.id, Activity.Type.CreateGitPush).map({ activities =>
             evaluateUser(user, activities)
           })
         })
@@ -31,6 +30,10 @@ trait BaseEvaluationController extends BaseController {
         .map(Ok(_))
     }
   }
+
+//  private def xxxx(userId: Long, sinceBeforeDays: Int) = {
+//    targetActivityTypes.map(backlogApiClient)
+//  }
 
   private def evaluateUser(user: User, activities: Seq[Activity]) = {
     val evaluationActivities = activities.map(evaluateActivity)

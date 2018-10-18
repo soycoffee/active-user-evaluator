@@ -60,8 +60,8 @@ object Activity {
 
   }
 
-  implicit val readsFromTypeId: Reads[Activity] = (
-    (__ \ "type").read[Int].map(id => Type.Values.find(_.id == id).get) and
+  implicit val responseReads: Reads[Activity] = (
+    (__ \ "type").read[Int].map(id => Type.Values.find(_.id == id)).filter(_.isDefined).map(_.get) and
     (__ \ "created").read(Reads.DefaultLocalDateTimeReads) and
     (__ \ "content").read[JsObject]
   ) (Activity.apply _)

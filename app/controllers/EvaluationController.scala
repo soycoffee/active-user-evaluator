@@ -1,6 +1,7 @@
 package controllers
 
 import javax.inject._
+import models.Activity
 import play.api.mvc._
 import services.{ActivityPointAggregator, BacklogApiClient, UseApiDestination}
 
@@ -12,4 +13,8 @@ class EvaluationController @Inject()(
                                       val backlogApiClient: BacklogApiClient,
                                       val activityPointAggregator: ActivityPointAggregator,
                                       val ec: ExecutionContext,
-                                    ) extends InjectedController with BaseEvaluationController
+                                    ) extends InjectedController with BaseEvaluationController {
+
+  override val targetActivityTypes: Seq[Activity.Type] = Activity.Type.Values
+
+}
