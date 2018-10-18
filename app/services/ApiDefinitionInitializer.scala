@@ -1,7 +1,7 @@
 package services
 
 import repositories.ApiDefinitionRepository
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import models.ApiDefinition
 
 trait ApiDefinitionInitializer {
@@ -12,6 +12,7 @@ trait ApiDefinitionInitializer {
 
 object ApiDefinitionInitializer {
 
+  @Singleton
   class Dev @Inject()(apiDefinitionDao: ApiDefinitionRepository) extends ApiDefinitionInitializer {
 
     override def apply(): Unit =

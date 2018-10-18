@@ -1,7 +1,9 @@
 package services
 
+import javax.inject.Singleton
 import models.Activity
 
+@Singleton
 class ActivityPointJudge {
 
   def apply(activity: Activity): Int =

@@ -1,11 +1,12 @@
 package services
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import models._
 
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
 
+@Singleton
 class EvaluationAggregator @Inject()(
                                       useApiDestination: UseApiDestination,
                                       backlogApiClient: BacklogApiClient,

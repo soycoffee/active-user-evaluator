@@ -1,13 +1,13 @@
 package repositories
 
-import scala.concurrent.{ ExecutionContext, Future }
-import javax.inject.Inject
-
+import scala.concurrent.{ExecutionContext, Future}
+import javax.inject.{Inject, Singleton}
 import models.ApiDefinition
 import play.api.db.slick.DatabaseConfigProvider
 import play.api.db.slick.HasDatabaseConfigProvider
 import slick.jdbc.JdbcProfile
 
+@Singleton
 class ApiDefinitionRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext) extends HasDatabaseConfigProvider[JdbcProfile] {
 
   import profile.api._
