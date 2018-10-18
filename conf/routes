@@ -1,5 +1,4 @@
-#GET / controllers.ApiController.index(projectId: String, apiKey: String, authors: String, sinceBeforeDays: Int)
-GET / controllers.ApiController.index()
+GET /projects/:projectId controllers.EvaluationController.index(projectId: String, sinceBeforeDays: Option[Int], apiKey: String)
 GET /apiDefinitions/ controllers.ApiDefinitionController.query
 POST /apiDefinitions/ controllers.ApiDefinitionController.create
 

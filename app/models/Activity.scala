@@ -1,24 +1,17 @@
 package models
 
 import java.time.LocalDateTime
+
 import play.api.libs.json._
 import play.api.libs.json.Reads._
 import play.api.libs.functional.syntax._
 import play.api.libs.json.{JsObject, Reads}
 
-case class Activity(`type`: Activity.Type, created: LocalDateTime, content: JsObject) {
-
-  def point: Int = `type`.point(content)
-
-}
+case class Activity(`type`: Activity.Type, created: LocalDateTime, content: JsObject)
 
 object Activity {
 
-  abstract class Type(val id: Int, val group: TypeGroup) {
-
-    def point(content: JsObject): Int = 1
-
-  }
+  abstract class Type(val id: Int, val group: TypeGroup)
 
   object Type {
 
@@ -29,6 +22,7 @@ object Activity {
     case object UpdateWiki extends Type(6, TypeGroup.Document)
     case object CreateFile extends Type(8, TypeGroup.Document)
     case object UpdateFile extends Type(9, TypeGroup.Document)
+    case object CreateGitPush extends Type(12, TypeGroup.Implement)
     case object CreateGitRepository extends Type(13, TypeGroup.Implement)
     case object UpdateMultiIssue extends Type(14, TypeGroup.Management)
     case object CreatePullRequest extends Type(18, TypeGroup.Implement)
@@ -54,13 +48,6 @@ object Activity {
       UpdateVersion,
     )
 
-    case object CreateGitPush extends Type(12, TypeGroup.Implement) {
-
-      override def point(content: JsObject): Int =
-        content("revision_count").as[Int]
-
-    }
-
   }
 
   abstract class TypeGroup
@@ -73,10 +60,16 @@ object Activity {
 
   }
 
-  implicit val reads: Reads[Activity] = (
+  implicit val readsFromTypeId: Reads[Activity] = (
     (__ \ "type").read[Int].map(id => Type.Values.find(_.id == id).get) and
     (__ \ "created").read(Reads.DefaultLocalDateTimeReads) and
     (__ \ "content").read[JsObject]
-  )(Activity.apply _)
+  ) (Activity.apply _)
+
+  implicit val writes: OWrites[Activity] = (
+    (__ \ "type").write[String].contramap[Type](_.toString) and
+    (__ \ "created").write(Writes.DefaultLocalDateTimeWrites) and
+    (__ \ "content").write[JsObject]
+  ) (unlift(Activity.unapply))
 
 }
