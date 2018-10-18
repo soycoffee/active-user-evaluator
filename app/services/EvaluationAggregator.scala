@@ -2,16 +2,23 @@ package services
 
 import javax.inject.{Inject, Singleton}
 import models._
+import play.api.Configuration
 
 import scala.Function.tupled
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class EvaluationAggregator @Inject()(
+                                      configuration: Configuration,
                                       useApiDestination: UseApiDestination,
                                       backlogApiClient: BacklogApiClient,
                                       activityPointAggregator: ActivityPointJudge,
                                     )(implicit val ec: ExecutionContext) {
+
+  private val defaultSinceBeforeDays: Int = configuration.get[Int]("evaluation.default.sinceBeforeDays")
+
+  def queryEvaluationUsers(projectId: String, sinceBeforeDays: Option[Int], activityTypes: Seq[Activity.Type])(implicit destination: BacklogApiClient.Destination): Future[Seq[EvaluationUser]] =
+    queryEvaluationUsers(projectId, sinceBeforeDays.getOrElse(defaultSinceBeforeDays), activityTypes)
 
   def queryEvaluationUsers(projectId: String, sinceBeforeDays: Int, activityTypes: Seq[Activity.Type])(implicit destination: BacklogApiClient.Destination): Future[Seq[EvaluationUser]] =
     for {
