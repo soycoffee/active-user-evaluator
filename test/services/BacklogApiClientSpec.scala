@@ -83,7 +83,7 @@ class BacklogApiClientSpec extends PlaySpec with GuiceOneServerPerSuite with Moc
         ),
       ),
     )
-    Mockito.verify(wsClient).url(ArgumentMatchers.eq("https://example.com/api/v2/users/1/activities?activityTypeId[]=1&apiKey=key"))
+    Mockito.verify(wsClient).url(ArgumentMatchers.eq("https://example.com/api/v2/users/1/activities?activityTypeId[]=1&count=100&apiKey=key"))
     Mockito.verify(wsRequest).withMethod(ArgumentMatchers.eq("GET"))
   }
 

@@ -28,7 +28,11 @@ class BacklogApiClient @Inject()(ws: WSClient)(implicit ec: ExecutionContext) {
       .map(_.as[Seq[Activity]])
 
   def queryUserActivitiesAsJson(userId: Long, `type`: Activity.Type)(implicit destination: Destination): Future[JsValue] =
-    access("GET", makeApiUrl(s"/users/$userId/activities", "activityTypeId[]" -> s"${`type`.id}"))
+    access("GET", makeApiUrl(
+      s"/users/$userId/activities",
+      "activityTypeId[]" -> s"${`type`.id}",
+      "count" -> "100",
+    ))
 
   private def access(method: String, url: String): Future[JsValue] = {
     val request = ws.url(url)
