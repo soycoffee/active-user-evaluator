@@ -1,97 +1,93 @@
 package services
 
-import com.typesafe.config.ConfigFactory
-import models.User
+import java.time.LocalDateTime
+
+import models.{Activity, User}
+import org.mockito._
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.Application
+import play.api.db.slick.DatabaseConfigProvider
+import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.libs.json.Json
-import play.api.mvc.{Action, RequestHeader, Results}
-import play.api.routing.{Router, SimpleRouter}
-import play.api.routing.sird._
-import play.api.test.WsTestClient
-import play.api.{Application, BuiltInComponentsFromContext, Configuration}
-import play.core.server.Server
-import play.filters.HttpFiltersComponents
+import play.api.libs.json.{JsValue, Json}
+import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
 import play.api.test.Helpers._
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
-class BacklogApiClientSpec extends PlaySpec with GuiceOneServerPerSuite {
+class BacklogApiClientSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar {
 
   override def fakeApplication(): Application =
     GuiceApplicationBuilder(
-      configuration = Configuration(ConfigFactory.parseResources("dev.conf")),
-//      overrides = Seq(
-//        bind[ApiDefinitionInitializer].to[ApiDefinitionInitializer.Dev],
-//      ),
+      overrides = Seq(
+        bind[DatabaseConfigProvider].to(mock[DatabaseConfigProvider]),
+      ),
     )
       .build()
 
+  private implicit val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
   private implicit val destination: BacklogApiClient.Destination = BacklogApiClient.Destination("example.com", "key")
-  private val sampleUser = User(1, "userId", "name")
 
-  private def ifRoute(method: String, path: String)(request: RequestHeader): Boolean =
-    request.host == destination.domain && request.method == method
-
-  def withBacklogApiClient[T](block: BacklogApiClient => T): T = {
-    Server.withRouter() {
-      case request => Action {
-        Results.Ok(Json.arr(
-          Json.obj(
-            "id" -> sampleUser.id,
-            "userId" -> sampleUser.userId,
-            "name" -> sampleUser.name,
-          ),
-        ))
-      }
-    } { implicit port =>
-      WsTestClient.withClient { client =>
-        val ec = app.injector.instanceOf[ExecutionContext]
-        block(new BacklogApiClient(client)(ec))
-      }
-    }
+  private def initializeMock(body: JsValue) = {
+    val wsClient = mock[WSClient]
+    val wsRequest = mock[WSRequest]
+    val wsResponse = mock[WSResponse]
+    Mockito.when(wsClient.url(ArgumentMatchers.any())) thenReturn wsRequest
+    Mockito.when(wsRequest.withMethod(ArgumentMatchers.any())) thenReturn wsRequest
+    Mockito.when(wsRequest.withQueryStringParameters(ArgumentMatchers.any())) thenReturn wsRequest
+    Mockito.when(wsRequest.execute()) thenReturn Future.successful(wsResponse)
+    Mockito.when(wsResponse.body[JsValue](ArgumentMatchers.any())) thenReturn body
+    (wsClient, wsRequest, wsResponse)
   }
 
-//  def withBacklogApiClient[T](block: BacklogApiClient => T): T = {
-//    Server.withApplicationFromContext() { context =>
-//      new BuiltInComponentsFromContext(context) with HttpFiltersComponents {
-//        override def router: Router = SimpleRouter({
-//          case request => Action {
-//            Results.Ok(Json.arr(
-//              Json.obj(
-//                "id" -> sampleUser.id,
-//                "userId" -> sampleUser.userId,
-//                "name" -> sampleUser.name,
-//              ),
-//            ))
-//          }
-//        })
-////        override def router: Router = Router.from {
-////          case GET(p"/repositories") => Action {
-////            Results.Ok(Json.arr(
-////              Json.obj(
-////                "id" -> sampleUser.id,
-////                "userId" -> sampleUser.userId,
-////                "name" -> sampleUser.name,
-////              ),
-////            ))
-////          }
-////        }
-//      }.application
-//    } { implicit port =>
-//      WsTestClient.withClient { client =>
-//        val ec = app.injector.instanceOf[ExecutionContext]
-//        block(new BacklogApiClient(client)(ec))
-//      }
-//    }
-//  }
-
   "queryProjectUsers" in {
-    withBacklogApiClient { client =>
-      val users = await(client.queryProjectUsers("1"))
-      users mustBe Seq(sampleUser)
-    }
+    val (wsClient, wsRequest, _) = initializeMock(
+      Json.arr(
+        Json.obj(
+          "id" -> 1,
+          "userId" -> "userId",
+          "name" -> "name",
+        ),
+      ),
+    )
+    val backlogApiClient = new BacklogApiClient(wsClient)
+    val users = await(backlogApiClient.queryProjectUsers("1"))
+    users mustBe Seq(
+      User(1, "userId", "name"),
+    )
+    Mockito.verify(wsClient).url(ArgumentMatchers.eq("https://example.com/api/v2/projects/1/users"))
+    Mockito.verify(wsRequest).withMethod(ArgumentMatchers.eq("GET"))
+    Mockito.verify(wsRequest).withQueryStringParameters(ArgumentMatchers.argThat[Seq[(String, String)]](_ == Seq("apiKey" -> "key")): _*)
+  }
+
+  "queryUserActivities" in {
+    val (wsClient, wsRequest, _) = initializeMock(
+      Json.arr(
+        Json.obj(
+          "type" -> 1,
+          "created" -> "2000-01-01T00:00:00Z",
+          "content" -> Json.obj(
+            "key" -> "value",
+          ),
+        ),
+      ),
+    )
+    val backlogApiClient = new BacklogApiClient(wsClient)
+    val activities = await(backlogApiClient.queryUserActivities(1))
+    activities mustBe Seq(
+      Activity(
+        Activity.Type.CreateIssue,
+        LocalDateTime.of(2000, 1, 1, 0, 0, 0),
+        Json.obj(
+          "key" -> "value",
+        ),
+      ),
+    )
+    Mockito.verify(wsClient).url(ArgumentMatchers.eq("https://example.com/api/v2/users/1/activities"))
+    Mockito.verify(wsRequest).withMethod(ArgumentMatchers.eq("GET"))
+    Mockito.verify(wsRequest).withQueryStringParameters(ArgumentMatchers.argThat[Seq[(String, String)]](_ == Seq("apiKey" -> "key")): _*)
   }
 
 }

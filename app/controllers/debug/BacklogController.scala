@@ -19,7 +19,7 @@ class BacklogController @Inject()(onlyDebug: OnlyDebug, backlogApiClient: Backlo
 
   def queryActivities(userId: Long, apiKey: String): Action[AnyContent] = onlyDebug.async {
     useApiDestination(apiKey) { implicit destination =>
-      backlogApiClient.queryUsersActivitiesAsJson(userId)
+      backlogApiClient.queryUserActivitiesAsJson(userId)
         .map(Ok(_))
     }
   }

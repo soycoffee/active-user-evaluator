@@ -1,9 +1,9 @@
 package services
 
 import javax.inject._
-import models.User
+import models.{Activity, User}
 import play.api.Logger
-import play.api.libs.json.{JsValue, Json, Reads}
+import play.api.libs.json.JsValue
 import play.api.libs.ws.WSClient
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -22,11 +22,11 @@ class BacklogApiClient @Inject()(ws: WSClient)(implicit ec: ExecutionContext) {
   def queryProjectUsersAsJson(projectId: String)(implicit destination: Destination): Future[JsValue] =
     access("GET", s"/projects/$projectId/users")
 
-  def queryUsersActivities(projectId: String)(implicit destination: Destination): Future[Seq[User]] =
-    queryProjectUsersAsJson(projectId)
-      .map(_.as[Seq[User]])
+  def queryUserActivities(userId: Long)(implicit destination: Destination): Future[Seq[Activity]] =
+    queryUserActivitiesAsJson(userId)
+      .map(_.as[Seq[Activity]])
 
-  def queryUsersActivitiesAsJson(userId: Long)(implicit destination: Destination): Future[JsValue] =
+  def queryUserActivitiesAsJson(userId: Long)(implicit destination: Destination): Future[JsValue] =
     access("GET", s"/users/$userId/activities")
 
   private def access(method: String, path: String)(implicit destination: Destination): Future[JsValue] = {

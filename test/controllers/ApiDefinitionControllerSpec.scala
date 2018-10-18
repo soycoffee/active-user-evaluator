@@ -29,7 +29,7 @@ class ApiDefinitionControllerSpec extends PlaySpec with GuiceOneServerPerSuite {
     wsCall(call)
       .withQueryStringParameters("operationKey" -> "dev")
 
-  "Unauthorized" should {
+  "UNAUTHORIZED" should {
 
     for(call <- Seq(
       routes.ApiDefinitionController.query(),
