@@ -3,7 +3,7 @@ package controllers
 import javax.inject._
 import models.Activity
 import play.api.mvc._
-import services.{ActivityPointAggregator, BacklogApiClient, UseApiDestination}
+import services.{ActivityPointJudge, BacklogApiClient, UseApiDestination}
 
 import scala.concurrent.ExecutionContext
 
@@ -11,10 +11,10 @@ import scala.concurrent.ExecutionContext
 class EvaluationController @Inject()(
                                       val useApiDestination: UseApiDestination,
                                       val backlogApiClient: BacklogApiClient,
-                                      val activityPointAggregator: ActivityPointAggregator,
+                                      val activityPointAggregator: ActivityPointJudge,
                                       val ec: ExecutionContext,
                                     ) extends InjectedController with BaseEvaluationController {
 
-  override val targetActivityTypes: Seq[Activity.Type] = Activity.Type.Values
+  override val targetActivityTypes: Seq[Activity.Type] = Seq(Activity.Type.CreateGitPush)
 
 }

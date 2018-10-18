@@ -2,7 +2,7 @@ package services
 
 import models.Activity
 
-class ActivityPointAggregator {
+class ActivityPointJudge {
 
   def apply(activity: Activity): Int =
     activity.`type` match {
