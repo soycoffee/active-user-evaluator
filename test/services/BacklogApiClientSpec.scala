@@ -31,13 +31,14 @@ class BacklogApiClientSpec extends PlaySpec with GuiceOneServerPerSuite with Moc
   private implicit val destination: BacklogApiClient.Destination = BacklogApiClient.Destination("example.com", "key")
 
   private def initializeMock(body: JsValue) = {
+    import ArgumentMatchers.any
     val wsClient = mock[WSClient]
     val wsRequest = mock[WSRequest]
     val wsResponse = mock[WSResponse]
-    Mockito.when(wsClient.url(ArgumentMatchers.any())) thenReturn wsRequest
-    Mockito.when(wsRequest.withMethod(ArgumentMatchers.any())) thenReturn wsRequest
+    Mockito.when(wsClient.url(any())) thenReturn wsRequest
+    Mockito.when(wsRequest.withMethod(any())) thenReturn wsRequest
     Mockito.when(wsRequest.execute()) thenReturn Future.successful(wsResponse)
-    Mockito.when(wsResponse.body[JsValue](ArgumentMatchers.any())) thenReturn body
+    Mockito.when(wsResponse.body[JsValue](any())) thenReturn body
     (wsClient, wsRequest, wsResponse)
   }
 
