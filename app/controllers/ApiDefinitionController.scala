@@ -1,14 +1,14 @@
 package controllers
 
 import controllers.ApiDefinitionController.OperationKeyAuthenticated
-import repositories.ApiDefinitionRepository
 import javax.inject._
 import models.ApiDefinition
 import play.api.Configuration
 import play.api.libs.json.Json
 import play.api.mvc.Security.AuthenticatedBuilder
 import play.api.mvc._
-import services.ApiDefinitionInitializer
+import repositories.ApiDefinitionRepository
+import services.{ApiDefinitionInitializer, ApiDefinitionKeyGenerator}
 
 import scala.concurrent.ExecutionContext
 
@@ -17,6 +17,7 @@ class ApiDefinitionController @Inject()(
                                          parse: PlayBodyParsers,
                                          apiDefinitionDao: ApiDefinitionRepository,
                                          apiDefinitionInitializer: ApiDefinitionInitializer,
+                                         apiDefinitionKeyGenerator: ApiDefinitionKeyGenerator,
                                          operationKeyAuthenticated: OperationKeyAuthenticated,
                                        )(implicit ec: ExecutionContext) extends InjectedController {
 
@@ -28,7 +29,7 @@ class ApiDefinitionController @Inject()(
       .map(Ok(_))
   }
 
-  def create: Action[ApiDefinition] = operationKeyAuthenticated.async(parse.json(ApiDefinition.format)) { request =>
+  def create: Action[ApiDefinition] = operationKeyAuthenticated.async(parse.json(apiDefinitionKeyGenerator.reads)) { request =>
     apiDefinitionDao.insert(request.body)
       .map(Json.toJson(_))
       .map(Ok(_))

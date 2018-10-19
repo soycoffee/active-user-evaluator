@@ -10,15 +10,22 @@ import play.api.libs.ws.WSClient
 import play.api.mvc.Call
 import play.api.test.Helpers._
 import play.api.{Application, Configuration}
-import services.ApiDefinitionInitializer
+import services.{ApiDefinitionInitializer, ApiDefinitionKeyGenerator}
 
 class ApiDefinitionControllerSpec extends PlaySpec with GuiceOneServerPerSuite {
+
+  private val fixedApiDefinitionKeyGenerator = new ApiDefinitionKeyGenerator {
+
+    override def apply(): String = "fixed"
+
+  }
 
   override def fakeApplication(): Application =
     GuiceApplicationBuilder(
       configuration = Configuration(ConfigFactory.parseResources("dev.conf")),
       overrides = Seq(
         bind[ApiDefinitionInitializer].to[ApiDefinitionInitializer.Dev],
+        bind[ApiDefinitionKeyGenerator].toInstance(fixedApiDefinitionKeyGenerator),
       ),
     )
       .build()
@@ -34,6 +41,7 @@ class ApiDefinitionControllerSpec extends PlaySpec with GuiceOneServerPerSuite {
     for(call <- Seq(
       routes.ApiDefinitionController.query(),
       routes.ApiDefinitionController.create(),
+      routes.ApiDefinitionController.update(),
     )) {
 
       s"${call.method} ${call.url}" in {
@@ -69,17 +77,19 @@ class ApiDefinitionControllerSpec extends PlaySpec with GuiceOneServerPerSuite {
 
     "OK" in  {
       val requestBody = Json.obj(
-        "key" -> "createKey",
         "backlogDomain" -> "createBacklogDomain",
         "backlogApiKey" -> "createBacklogApiKey",
       )
       val response = await(authenticated(routes.ApiDefinitionController.create()).post(requestBody))
       response.status mustBe OK
-      response.json mustBe requestBody
+      val requestBodyWithKey = requestBody ++ Json.obj(
+        "key" -> "fixed",
+      )
+      response.json mustBe requestBodyWithKey
       val queryResponse = await(authenticated(routes.ApiDefinitionController.query()).execute())
       val queryObjects = queryResponse.json.as[Seq[JsValue]]
       queryObjects must have length 2
-      queryObjects.last mustBe requestBody
+      queryObjects.last mustBe requestBodyWithKey
     }
 
   }
@@ -88,7 +98,7 @@ class ApiDefinitionControllerSpec extends PlaySpec with GuiceOneServerPerSuite {
 
     "OK" in  {
       val requestBody = Json.obj(
-        "key" -> "createKey",
+        "key" -> "fixed",
         "backlogDomain" -> "updateBacklogDomain",
         "backlogApiKey" -> "updateBacklogApiKey",
       )
