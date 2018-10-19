@@ -39,6 +39,7 @@ object Activity {
       UpdateWiki,
       CreateFile,
       UpdateFile,
+      CreateGitPush,
       CreateGitRepository,
       UpdateMultiIssue,
       CreatePullRequest,
