@@ -14,7 +14,9 @@ Backlog ユーザーの過去 N 日間の活動を集計し、活動が多いユ
 * [Backlog API](https://developer.nulab-inc.com/ja/docs/backlog/)
 * [Typetalk API](https://developer.nulab-inc.com/ja/docs/typetalk/)
 
-# 主に利用する技術
+# 他に利用する技術
 
-* Heroku: アプリケーションのデプロイ先
-* MySQL: APIキーなどを保存する
+* MySQL: APIキーなどの保存
+* Slick: データベースの操作
+* ScalaTest: ユニットテスト
+* Heroku: デプロイ先
