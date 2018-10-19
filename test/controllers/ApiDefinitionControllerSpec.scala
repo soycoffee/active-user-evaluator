@@ -23,7 +23,7 @@ class ApiDefinitionControllerSpec extends PlaySpec with GuiceOneServerPerSuite {
     )
       .build()
 
-  private implicit val wsClient: WSClient = app.injector.instanceOf[WSClient]
+  private implicit def wsClient: WSClient = app.injector.instanceOf[WSClient]
 
   private def authenticated(call: Call) =
     wsCall(call)
@@ -69,9 +69,9 @@ class ApiDefinitionControllerSpec extends PlaySpec with GuiceOneServerPerSuite {
 
     "OK" in  {
       val requestBody = Json.obj(
-        "key" -> "key",
-        "backlogDomain" -> "backlogDomain",
-        "backlogApiKey" -> "backlogApiKey",
+        "key" -> "createKey",
+        "backlogDomain" -> "createBacklogDomain",
+        "backlogApiKey" -> "createBacklogApiKey",
       )
       val response = await(authenticated(routes.ApiDefinitionController.create()).post(requestBody))
       response.status mustBe OK
@@ -80,6 +80,34 @@ class ApiDefinitionControllerSpec extends PlaySpec with GuiceOneServerPerSuite {
       val queryObjects = queryResponse.json.as[Seq[JsValue]]
       queryObjects must have length 2
       queryObjects.last mustBe requestBody
+    }
+
+  }
+
+  "update" should {
+
+    "OK" in  {
+      val requestBody = Json.obj(
+        "key" -> "createKey",
+        "backlogDomain" -> "updateBacklogDomain",
+        "backlogApiKey" -> "updateBacklogApiKey",
+      )
+      val response = await(authenticated(routes.ApiDefinitionController.update()).put(requestBody))
+      response.status mustBe OK
+      response.json mustBe requestBody
+      val queryResponse = await(authenticated(routes.ApiDefinitionController.query()).execute())
+      val queryObjects = queryResponse.json.as[Seq[JsValue]]
+      queryObjects.last mustBe requestBody
+    }
+
+    "NOT_FOUND" in  {
+      val requestBody = Json.obj(
+        "key" -> "notExistsKey",
+        "backlogDomain" -> "",
+        "backlogApiKey" -> "",
+      )
+      val response = await(authenticated(routes.ApiDefinitionController.update()).put(requestBody))
+      response.status mustBe NOT_FOUND
     }
 
   }

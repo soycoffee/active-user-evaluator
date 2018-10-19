@@ -34,6 +34,12 @@ class ApiDefinitionController @Inject()(
       .map(Ok(_))
   }
 
+  def update: Action[ApiDefinition] = operationKeyAuthenticated.async(parse.json(ApiDefinition.format)) { request =>
+    apiDefinitionDao.update(request.body)
+      .map(_.map(Json.toJson(_)))
+      .map(_.fold[Result](NotFound)(Ok(_)))
+  }
+
 }
 
 object ApiDefinitionController {

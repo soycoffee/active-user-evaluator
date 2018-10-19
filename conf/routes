@@ -1,6 +1,7 @@
 GET /projects/:projectId controllers.EvaluationController.index(projectId: String, sinceBeforeDays: Option[Int], apiKey: String)
-GET /apiDefinitions/ controllers.ApiDefinitionController.query
-POST /apiDefinitions/ controllers.ApiDefinitionController.create
+GET /apiDefinitions controllers.ApiDefinitionController.query
+POST /apiDefinitions controllers.ApiDefinitionController.create
+PUT /apiDefinitions controllers.ApiDefinitionController.update
 
 GET /debug/backlog/projects/:projectId/users controllers.debug.BacklogController.queryUsers(projectId: String, apiKey: String)
 GET /debug/backlog/users/:userId/activities controllers.debug.BacklogController.queryActivities(userId: Long, activityTypeId: Int, apiKey: String)

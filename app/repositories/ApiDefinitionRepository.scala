@@ -23,6 +23,16 @@ class ApiDefinitionRepository @Inject()(protected val dbConfigProvider: Database
   def insert(apiDefinition: ApiDefinition): Future[ApiDefinition] =
     db.run(ApiDefinitions += apiDefinition).map(_ => apiDefinition)
 
+  def update(apiDefinition: ApiDefinition): Future[Option[ApiDefinition]] =
+    db.run(ApiDefinitions
+      .filter(_.key === apiDefinition.key)
+      .map(x => (x.backlog_domain, x.backlog_api_key))
+      .update((apiDefinition.backlogDomain, apiDefinition.backlogApiKey))
+    ) map {
+      case 0 => None
+      case _ => Some(apiDefinition)
+    }
+
   private class ApiDefinitionsTable(tag: Tag) extends Table[ApiDefinition](tag, "API_DEFINITIONS") {
 
     def key = column[String]("KEY", O.PrimaryKey)
