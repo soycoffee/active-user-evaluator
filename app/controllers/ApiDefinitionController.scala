@@ -41,6 +41,14 @@ class ApiDefinitionController @Inject()(
       .map(_.fold[Result](NotFound)(Ok(_)))
   }
 
+  def delete(key: String): Action[AnyContent] = operationKeyAuthenticated.async {
+    apiDefinitionDao.deleteByKey(key)
+      .map({
+        case true => NoContent
+        case false => NotFound
+      })
+  }
+
 }
 
 object ApiDefinitionController {

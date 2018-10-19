@@ -33,6 +33,9 @@ class ApiDefinitionRepository @Inject()(protected val dbConfigProvider: Database
       case _ => Some(apiDefinition)
     }
 
+  def deleteByKey(key: String): Future[Boolean] =
+    db.run(ApiDefinitions.filter(_.key === key).delete).map(_ != 0)
+
   private class ApiDefinitionsTable(tag: Tag) extends Table[ApiDefinition](tag, "API_DEFINITIONS") {
 
     def key = column[String]("KEY", O.PrimaryKey)

@@ -16,7 +16,7 @@ class ApiDefinitionControllerSpec extends PlaySpec with GuiceOneServerPerSuite {
 
   private val fixedApiDefinitionKeyGenerator = new ApiDefinitionKeyGenerator {
 
-    override def apply(): String = "fixed"
+    override def apply(): String = "fixedKey"
 
   }
 
@@ -83,7 +83,7 @@ class ApiDefinitionControllerSpec extends PlaySpec with GuiceOneServerPerSuite {
       val response = await(authenticated(routes.ApiDefinitionController.create()).post(requestBody))
       response.status mustBe OK
       val requestBodyWithKey = requestBody ++ Json.obj(
-        "key" -> "fixed",
+        "key" -> "fixedKey",
       )
       response.json mustBe requestBodyWithKey
       val queryResponse = await(authenticated(routes.ApiDefinitionController.query()).execute())
@@ -98,7 +98,7 @@ class ApiDefinitionControllerSpec extends PlaySpec with GuiceOneServerPerSuite {
 
     "OK" in  {
       val requestBody = Json.obj(
-        "key" -> "fixed",
+        "key" -> "fixedKey",
         "backlogDomain" -> "updateBacklogDomain",
         "backlogApiKey" -> "updateBacklogApiKey",
       )
@@ -117,6 +117,25 @@ class ApiDefinitionControllerSpec extends PlaySpec with GuiceOneServerPerSuite {
         "backlogApiKey" -> "",
       )
       val response = await(authenticated(routes.ApiDefinitionController.update()).put(requestBody))
+      response.status mustBe NOT_FOUND
+    }
+
+  }
+
+  "delete" should {
+
+    "NO_CONTENT" in  {
+      val requestKey = "fixedKey"
+      val response = await(authenticated(routes.ApiDefinitionController.delete(requestKey)).delete())
+      response.status mustBe NO_CONTENT
+      val queryResponse = await(authenticated(routes.ApiDefinitionController.query()).execute())
+      val restKeys = queryResponse.json.as[Seq[JsValue]].map(_("key").as[String])
+      restKeys mustBe Seq("dev")
+    }
+
+    "NOT_FOUND" in  {
+      val requestKey = "notExistsKey"
+      val response = await(authenticated(routes.ApiDefinitionController.delete(requestKey)).delete())
       response.status mustBe NOT_FOUND
     }
 
