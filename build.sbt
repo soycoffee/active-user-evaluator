@@ -1,4 +1,4 @@
-name := """active-user-finder"""
+name := """active-user-evaluator"""
 
 version := "1.0"
 
