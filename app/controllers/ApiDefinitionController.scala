@@ -1,11 +1,9 @@
 package controllers
 
-import controllers.ApiDefinitionController.OperationKeyAuthenticated
+import actions.OperationKeyAuthenticated
 import javax.inject._
 import models.ApiDefinition
-import play.api.Configuration
 import play.api.libs.json.Json
-import play.api.mvc.Security.AuthenticatedBuilder
 import play.api.mvc._
 import repositories.ApiDefinitionRepository
 import services.{ApiDefinitionInitializer, ApiDefinitionKeyGenerator}
@@ -47,28 +45,6 @@ class ApiDefinitionController @Inject()(
         case true => NoContent
         case false => NotFound
       })
-  }
-
-}
-
-object ApiDefinitionController {
-
-  class OperationKeyAuthenticated @Inject()(configuration: Configuration, parser: BodyParsers.Default)(implicit ec: ExecutionContext)
-    extends AuthenticatedBuilder(
-      OperationKeyAuthenticated.authenticate(configuration),
-      parser,
-    )
-
-  object OperationKeyAuthenticated {
-
-    val QueryStringKey = "operationKey"
-    val ConfigurationKey = "apiDefinition.operationKey"
-
-    def authenticate(configuration: Configuration)(request: RequestHeader): Option[String] = {
-      val configurationOperationKey = configuration.get[String](ConfigurationKey)
-      request.getQueryString(QueryStringKey).filter(_ == configurationOperationKey)
-    }
-
   }
 
 }
