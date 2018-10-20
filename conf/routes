@@ -1,4 +1,4 @@
-GET /projects/:projectId controllers.EvaluationController.index(projectId: String, count: Option[Int], sinceBeforeDays: Option[Int], apiKey: String)
+GET /projects/:projectId/evaluation/implement controllers.ImplementEvaluationController.index(projectId: String, count: Option[Int], sinceBeforeDays: Option[Int], apiKey: String)
 GET /apiDefinitions controllers.ApiDefinitionController.query
 POST /apiDefinitions controllers.ApiDefinitionController.create
 PUT /apiDefinitions controllers.ApiDefinitionController.update

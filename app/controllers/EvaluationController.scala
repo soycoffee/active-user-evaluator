@@ -1,19 +1,39 @@
 package controllers
 
-import javax.inject._
-import models.Activity
+import models._
+import play.api.libs.json.Json
 import play.api.mvc._
 import services.{EvaluationAggregator, UseApiDestination}
 
 import scala.concurrent.ExecutionContext
 
-@Singleton
-class EvaluationController @Inject()(
-                                      val useApiDestination: UseApiDestination,
-                                      val evaluationAggregator: EvaluationAggregator,
-                                      val ec: ExecutionContext,
-                                    ) extends InjectedController with BaseEvaluationController {
+trait EvaluationController extends BaseController {
 
-  override val targetActivityTypes: Seq[Activity.Type] = Seq(Activity.Type.CreateGitPush)
+  val useApiDestination: UseApiDestination
+  val evaluationAggregator: EvaluationAggregator
+  implicit val ec: ExecutionContext
+
+  val targetActivityTypes: Seq[Activity.Type]
+
+  def index(projectId: String, count: Option[Int], sinceBeforeDays: Option[Int], apiKey: String): Action[AnyContent] = Action.async {
+    useApiDestination(apiKey) { implicit destination =>
+      evaluationAggregator.queryEvaluationUsers(projectId, targetActivityTypes, count, sinceBeforeDays)
+        .map(Json.toJson(_))
+        .map(Ok(_))
+    }
+  }
+
+}
+
+object EvaluationController {
+
+  trait WithTypeGroup extends EvaluationController {
+
+    val targetActivityTypeGroup: Activity.TypeGroup
+
+    override val targetActivityTypes: Seq[Activity.Type] =
+      Activity.Type.Values.filter(_.group == targetActivityTypeGroup)
+
+  }
 
 }
