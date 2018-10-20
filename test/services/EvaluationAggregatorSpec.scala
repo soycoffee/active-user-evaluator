@@ -17,16 +17,6 @@ class EvaluationAggregatorSpec extends PlaySpec with GuiceOneServerPerSuite with
 
   private implicit val destination: BacklogApiClient.Destination = BacklogApiClient.Destination("example.com", "key")
 
-  private val noActivityArranger = new ActivityArranger(
-    app.configuration,
-    null,
-  ) {
-
-    override def apply(activities: Seq[Activity], sinceBeforeDays: Option[Int]): Seq[Activity] =
-      activities
-
-  }
-
   private def initializeMock(users: Seq[User], activities: Seq[Activity]) = {
     import ArgumentMatchers.any
     val backlogApiClient = mock[BacklogApiClient]
@@ -37,12 +27,14 @@ class EvaluationAggregatorSpec extends PlaySpec with GuiceOneServerPerSuite with
 
   private def initializeTarget(backlogApiClient: BacklogApiClient) = {
     import ArgumentMatchers.any
+    val activityArranger = mock[ActivityArranger]
     val evaluationUserArranger = mock[EvaluationUserArranger]
+    Mockito.when(activityArranger(any, any[Option[Int]])) thenAnswer (_.getArgument(0))
     Mockito.when(evaluationUserArranger(any, any[Option[Int]])) thenAnswer (_.getArgument(0))
     new EvaluationAggregator(
       backlogApiClient,
       new ActivityPointJudge(),
-      noActivityArranger,
+      activityArranger,
       evaluationUserArranger,
     )
   }
