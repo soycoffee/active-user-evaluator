@@ -15,9 +15,9 @@ trait BaseEvaluationController extends BaseController {
 
   val targetActivityTypes: Seq[Activity.Type]
 
-  def index(projectId: String, sinceBeforeDays: Option[Int], apiKey: String): Action[AnyContent] = Action.async {
+  def index(projectId: String, count: Option[Int], sinceBeforeDays: Option[Int], apiKey: String): Action[AnyContent] = Action.async {
     useApiDestination(apiKey) { implicit destination =>
-      evaluationAggregator.queryEvaluationUsers(projectId, sinceBeforeDays, targetActivityTypes)
+      evaluationAggregator.queryEvaluationUsers(projectId, targetActivityTypes, count, sinceBeforeDays)
         .map(Json.toJson(_))
         .map(Ok(_))
     }

@@ -5,30 +5,20 @@ import org.mockito._
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.db.slick.DatabaseConfigProvider
-import play.api.inject.bind
-import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
 import play.api.test.Helpers._
-import play.api.{Application, Configuration}
+import test.helpers.NoSlick
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
-class EvaluationAggregatorSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar {
+class EvaluationAggregatorSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with NoSlick {
 
-  override def fakeApplication(): Application =
-    GuiceApplicationBuilder(
-      overrides = Seq(
-        bind[DatabaseConfigProvider].to(mock[DatabaseConfigProvider]),
-      ),
-    )
-      .build()
+  import scala.concurrent.ExecutionContext.Implicits.global
 
-  private implicit val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
   private implicit val destination: BacklogApiClient.Destination = BacklogApiClient.Destination("example.com", "key")
 
   private val noActivityArranger = new ActivityArranger(
-    app.injector.instanceOf[Configuration],
+    app.configuration,
     null,
   ) {
 
@@ -45,12 +35,17 @@ class EvaluationAggregatorSpec extends PlaySpec with GuiceOneServerPerSuite with
     backlogApiClient
   }
 
-  private def initializeTarget(backlogApiClient: BacklogApiClient) =
+  private def initializeTarget(backlogApiClient: BacklogApiClient) = {
+    import ArgumentMatchers.any
+    val evaluationUserArranger = mock[EvaluationUserArranger]
+    Mockito.when(evaluationUserArranger(any, any[Option[Int]])) thenAnswer (_.getArgument(0))
     new EvaluationAggregator(
       backlogApiClient,
-      app.injector.instanceOf[ActivityPointJudge],
+      new ActivityPointJudge(),
       noActivityArranger,
+      evaluationUserArranger,
     )
+  }
 
   "queryEvaluationUsers" in {
     val mockUsers = Seq(
@@ -70,7 +65,7 @@ class EvaluationAggregatorSpec extends PlaySpec with GuiceOneServerPerSuite with
     )
     val backlogApiClient = initializeMock(mockUsers, mockActivities)
     val evaluationAggregator = initializeTarget(backlogApiClient)
-    val evaluationUsers = await(evaluationAggregator.queryEvaluationUsers("1", None, argActivityTypes))
+    val evaluationUsers = await(evaluationAggregator.queryEvaluationUsers("1", argActivityTypes, None, None))
     evaluationUsers must have length 2
     evaluationUsers.map(_.user) mustBe mockUsers
     evaluationUsers.map(_.point) mustBe Seq.fill(2)(12)
@@ -101,7 +96,7 @@ class EvaluationAggregatorSpec extends PlaySpec with GuiceOneServerPerSuite with
     )
     val backlogApiClient = initializeMock(mockUsers, mockActivities)
     val evaluationAggregator = initializeTarget(backlogApiClient)
-    val evaluationUsers = await(evaluationAggregator.queryEvaluationUsers("1", None, argActivityTypes))
+    val evaluationUsers = await(evaluationAggregator.queryEvaluationUsers("1", argActivityTypes, None, None))
     evaluationUsers mustBe Nil
     Mockito.verify(backlogApiClient, Mockito.never())
       .queryUserActivities(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.eq(destination))
@@ -117,7 +112,7 @@ class EvaluationAggregatorSpec extends PlaySpec with GuiceOneServerPerSuite with
     val argActivityTypes = Nil
     val backlogApiClient = initializeMock(mockUsers, mockActivities)
     val evaluationAggregator = initializeTarget(backlogApiClient)
-    val evaluationUsers = await(evaluationAggregator.queryEvaluationUsers("1", None, argActivityTypes))
+    val evaluationUsers = await(evaluationAggregator.queryEvaluationUsers("1", argActivityTypes, None, None))
     evaluationUsers must have length 1
     evaluationUsers.head.user mustBe mockUsers.head
     evaluationUsers.head.point mustBe 0
@@ -138,7 +133,7 @@ class EvaluationAggregatorSpec extends PlaySpec with GuiceOneServerPerSuite with
     val argActivityTypes = Seq(Activity.Type.CreateGitPush)
     val backlogApiClient = initializeMock(mockUsers, mockActivities)
     val evaluationAggregator = initializeTarget(backlogApiClient)
-    val evaluationUsers = await(evaluationAggregator.queryEvaluationUsers("1", None, argActivityTypes))
+    val evaluationUsers = await(evaluationAggregator.queryEvaluationUsers("1", argActivityTypes, None, None))
     evaluationUsers must have length 1
     evaluationUsers.head.point mustBe 2
   }

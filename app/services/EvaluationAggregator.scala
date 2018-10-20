@@ -11,14 +11,20 @@ class EvaluationAggregator @Inject()(
                                       backlogApiClient: BacklogApiClient,
                                       activityPointAggregator: ActivityPointJudge,
                                       activityArranger: ActivityArranger,
+                                      evaluationUserArranger: EvaluationUserArranger,
                                     )(implicit val ec: ExecutionContext) {
 
-  def queryEvaluationUsers(projectId: String, sinceBeforeDays: Option[Int], activityTypes: Seq[Activity.Type])(implicit destination: BacklogApiClient.Destination): Future[Seq[EvaluationUser]] =
+  def queryEvaluationUsers(projectId: String, activityTypes: Seq[Activity.Type], count: Option[Int], sinceBeforeDays: Option[Int])(implicit destination: BacklogApiClient.Destination): Future[Seq[EvaluationUser]] =
     for {
       users <- queryUsers(projectId)
       usersActivities <- queryUsersActivities(users.map(_.id), activityTypes)
     } yield {
-      (users zip (usersActivities map (activityArranger(_, sinceBeforeDays)))) map tupled(evaluate)
+      evaluationUserArranger(
+        (users zip usersActivities
+            .map(activityArranger(_, sinceBeforeDays))
+        ).map(tupled(evaluate)),
+        count,
+      )
     }
 
   private def queryUsers(projectId: String)(implicit destination: BacklogApiClient.Destination): Future[Seq[User]] =

@@ -15,7 +15,7 @@ class ActivityArranger @Inject()(
 
   import ActivityArranger._
 
-  private val defaultSinceBeforeDays: Int = configuration.get[Int]("evaluation.default.sinceBeforeDays")
+  private val defaultSinceBeforeDays: Int = configuration.get[Int]("evaluation.activity.default.sinceBeforeDays")
 
   def apply(activities: Seq[Activity], sinceBeforeDays: Option[Int]): Seq[Activity] =
     apply(activities, sinceBeforeDays.getOrElse(defaultSinceBeforeDays))
@@ -24,9 +24,9 @@ class ActivityArranger @Inject()(
     apply(activities, localDateNowProvider().minusDays(sinceBeforeDays).atTime(0, 0, 0))
 
   def apply(activities: Seq[Activity], sinceDateTime: LocalDateTime): Seq[Activity] =
-    takeWhileBySince(sort(activities), sinceDateTime)
+    takeWhileBySince(sortByCreated(activities), sinceDateTime)
 
-  private def sort(activities: Seq[Activity]): Seq[Activity] =
+  private def sortByCreated(activities: Seq[Activity]): Seq[Activity] =
     activities.sortBy(_.created)(localDateTimeOrdering.reverse)
 
   private def takeWhileBySince(activities: Seq[Activity], sinceDateTime: LocalDateTime): Seq[Activity] =

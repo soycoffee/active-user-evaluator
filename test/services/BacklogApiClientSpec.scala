@@ -7,27 +7,17 @@ import org.mockito._
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.Application
-import play.api.db.slick.DatabaseConfigProvider
-import play.api.inject.bind
-import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
 import play.api.test.Helpers._
+import test.helpers.NoSlick
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
-class BacklogApiClientSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar {
+class BacklogApiClientSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with NoSlick {
 
-  override def fakeApplication(): Application =
-    GuiceApplicationBuilder(
-      overrides = Seq(
-        bind[DatabaseConfigProvider].to(mock[DatabaseConfigProvider]),
-      ),
-    )
-      .build()
+  import scala.concurrent.ExecutionContext.Implicits.global
 
-  private implicit val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
   private implicit val destination: BacklogApiClient.Destination = BacklogApiClient.Destination("example.com", "key")
 
   private def initializeMock(body: JsValue) = {

@@ -3,23 +3,11 @@ package services
 import java.time.{LocalDate, LocalDateTime}
 
 import models.Activity
-import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.db.slick.DatabaseConfigProvider
-import play.api.inject.bind
-import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.{Application, Configuration}
+import test.helpers.NoSlick
 
-class ActivityArrangerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar {
-
-  override def fakeApplication(): Application =
-    GuiceApplicationBuilder(
-      overrides = Seq(
-        bind[DatabaseConfigProvider].to(mock[DatabaseConfigProvider]),
-      ),
-    )
-      .build()
+class ActivityArrangerSpec extends PlaySpec with GuiceOneServerPerSuite with NoSlick {
 
   private val fixedLocalDateNowProvider = new ActivityArranger.LocalDateNowProvider {
 
@@ -29,11 +17,11 @@ class ActivityArrangerSpec extends PlaySpec with GuiceOneServerPerSuite with Moc
 
   private def initializeTarget() =
     new ActivityArranger(
-      app.injector.instanceOf[Configuration],
+      app.configuration,
       fixedLocalDateNowProvider,
     )
 
-  "sort and takeWhileBySince" in {
+  "sortByCreated, takeWhileBySince" in {
     val activityArranger = initializeTarget()
     val argActivities = Seq(
       Activity(null, LocalDateTime.of(1999, 12, 30, 23, 59, 59), null),
