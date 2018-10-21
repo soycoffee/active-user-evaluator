@@ -8,11 +8,11 @@ import services.{EvaluationAggregator, UseApiDestination}
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class ImplementEvaluationController @Inject()(
+class DocumentEvaluationController @Inject()(
                                       val useApiDestination: UseApiDestination,
                                       val evaluationAggregator: EvaluationAggregator,
                                     )(implicit val ec: ExecutionContext) extends InjectedController with EvaluationController.WithTypeGroup {
 
-  override val targetActivityTypeGroup: Activity.TypeGroup = Activity.TypeGroup.Implement
+  override val targetActivityTypeGroup: Activity.TypeGroup = Activity.TypeGroup.Document
 
 }

@@ -1,6 +1,7 @@
-package controllers
+package routes
 
 import com.typesafe.config.ConfigFactory
+import controllers.routes
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.inject.bind

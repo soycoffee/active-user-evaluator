@@ -13,7 +13,7 @@ trait EvaluationController extends BaseController {
   val evaluationAggregator: EvaluationAggregator
   implicit val ec: ExecutionContext
 
-  val targetActivityTypes: Seq[Activity.Type]
+  def targetActivityTypes: Seq[Activity.Type]
 
   def index(projectId: String, count: Option[Int], sinceBeforeDays: Option[Int], apiKey: String): Action[AnyContent] = Action.async {
     useApiDestination(apiKey) { implicit destination =>
@@ -29,9 +29,9 @@ object EvaluationController {
 
   trait WithTypeGroup extends EvaluationController {
 
-    val targetActivityTypeGroup: Activity.TypeGroup
+    def targetActivityTypeGroup: Activity.TypeGroup
 
-    override val targetActivityTypes: Seq[Activity.Type] =
+    lazy val targetActivityTypes: Seq[Activity.Type] =
       Activity.Type.Values.filter(_.group == targetActivityTypeGroup)
 
   }
