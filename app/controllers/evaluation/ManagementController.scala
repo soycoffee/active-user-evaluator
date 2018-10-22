@@ -11,8 +11,13 @@ import scala.concurrent.ExecutionContext
 class ManagementController @Inject()(
                                       val useApiDestination: UseApiDestination,
                                       val evaluationAggregator: EvaluationAggregator,
-                                    )(implicit val ec: ExecutionContext) extends InjectedController with JsonController.WithTypeGroup {
+                                    )(implicit val ec: ExecutionContext) extends InjectedController
+  with JsonController
+  with TypetalkController
+  with HasTargetActivityTypeGroup
+{
 
   override val targetActivityTypeGroup: Activity.TypeGroup = Activity.TypeGroup.Management
+  override val typetalkMessageLabel = "マネジメント系アクティビティ ( 課題 / マイルストーン )"
 
 }

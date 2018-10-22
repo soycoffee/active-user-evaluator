@@ -1,8 +1,16 @@
 package models
 
-import play.api.libs.json.{Json, Writes}
+import java.time.LocalDateTime
 
-case class EvaluationActivity(activity: Activity, point: Int)
+import play.api.libs.json.{JsObject, Json, Writes}
+
+case class EvaluationActivity(activity: Activity, point: Int) {
+
+  def `type`: Activity.Type = activity.`type`
+  def created: LocalDateTime = activity.created
+  def content: JsObject = activity.content
+
+}
 
 object EvaluationActivity {
 

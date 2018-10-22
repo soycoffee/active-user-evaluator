@@ -3,48 +3,26 @@ package controllers.evaluation
 import java.time.LocalDateTime
 
 import models.{Activity, EvaluationActivity, EvaluationUser, User}
-import org.mockito.{ArgumentMatchers, Mockito}
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
-import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import org.mockito.Mockito
 import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.mvc._
 import play.api.test.Helpers._
 import play.api.test._
-import services._
 import test.helpers.NoSlick
 
-import scala.concurrent.Future
+trait JsonControllerSpec[Controller <: InjectedController with JsonController] extends BaseSpec[Controller] with NoSlick {
 
-trait JsonControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with NoSlick {
-
-  protected val constructController: (UseApiDestination, EvaluationAggregator) => JsonController
-
-  protected val targetActivityTypes: Seq[Activity.Type]
-
-  private implicit val apiDestination: BacklogApiClient.Destination = BacklogApiClient.Destination("", "")
-
-  private def initializeMock(evaluationUsers: Seq[EvaluationUser]) = {
-    import ArgumentMatchers.any
+  private def _initializeMock(evaluationUsers: Seq[EvaluationUser]) = {
+    val (useApiDestination, evaluationAggregator) = super.initializeMock(evaluationUsers)
     val request = mock[Request[AnyContent]]
-    val useApiDestination = mock[UseApiDestination]
-    val evaluationAggregator = mock[EvaluationAggregator]
-    Mockito.when(useApiDestination(any())(any())) thenAnswer (_.getArgument[BacklogApiClient.Destination => Future[Result]](1)(apiDestination))
-    Mockito.when(evaluationAggregator.queryEvaluationUsers(any(), any(), any(), any())(any())) thenReturn Future.successful(evaluationUsers)
     (request, useApiDestination, evaluationAggregator)
-  }
-
-  private def initializeTarget(useApiDestination: UseApiDestination, evaluationAggregator: EvaluationAggregator) = {
-    val controller = constructController(useApiDestination, evaluationAggregator)
-    controller.asInstanceOf[InjectedController].setControllerComponents(app.injector.instanceOf[ControllerComponents])
-    controller
   }
 
   "index" should {
 
     "OK" in  {
-      val (request, useApiDestination, evaluationAggregator) = initializeMock(Seq(
+      val (request, useApiDestination, evaluationAggregator) = _initializeMock(Seq(
         EvaluationUser(
           User(1, "userId", "name"),
           Seq(

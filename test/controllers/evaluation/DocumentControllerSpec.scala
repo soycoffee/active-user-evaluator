@@ -3,11 +3,11 @@ package controllers.evaluation
 import models.Activity
 import services._
 
-class DocumentControllerSpec extends JsonControllerSpec {
+class DocumentControllerSpec extends JsonControllerSpec[DocumentController] with TypetalkControllerSpec[DocumentController] {
 
   import scala.concurrent.ExecutionContext.Implicits.global
 
-  override protected val constructController: (UseApiDestination, EvaluationAggregator) => JsonController =
+  override protected val constructController: (UseApiDestination, EvaluationAggregator) => DocumentController =
     new DocumentController(_, _)
 
   override protected val targetActivityTypes: Seq[Activity.Type] = Seq(

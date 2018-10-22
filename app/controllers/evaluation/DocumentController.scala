@@ -9,10 +9,15 @@ import scala.concurrent.ExecutionContext
 
 @Singleton
 class DocumentController @Inject()(
-                                      val useApiDestination: UseApiDestination,
-                                      val evaluationAggregator: EvaluationAggregator,
-                                    )(implicit val ec: ExecutionContext) extends InjectedController with JsonController.WithTypeGroup {
+                                    val useApiDestination: UseApiDestination,
+                                    val evaluationAggregator: EvaluationAggregator,
+                                  )(implicit val ec: ExecutionContext) extends InjectedController
+  with JsonController
+  with TypetalkController
+  with HasTargetActivityTypeGroup
+{
 
   override val targetActivityTypeGroup: Activity.TypeGroup = Activity.TypeGroup.Document
+  override val typetalkMessageLabel: String = "ドキュメント系アクティビティ ( Wiki / ファイル )"
 
 }

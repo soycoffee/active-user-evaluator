@@ -3,11 +3,11 @@ package controllers.evaluation
 import models.Activity
 import services._
 
-class ImplementControllerSpec extends JsonControllerSpec {
+class ImplementControllerSpec extends JsonControllerSpec[ImplementController] with TypetalkControllerSpec[ImplementController] {
 
   import scala.concurrent.ExecutionContext.Implicits.global
 
-  override protected val constructController: (UseApiDestination, EvaluationAggregator) => JsonController =
+  override protected val constructController: (UseApiDestination, EvaluationAggregator) => ImplementController =
     new ImplementController(_, _)
 
   override protected val targetActivityTypes: Seq[Activity.Type] = Seq(
