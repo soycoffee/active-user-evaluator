@@ -11,7 +11,7 @@ import play.api.test.Helpers._
 import play.api.test._
 import test.helpers.NoSlick
 
-trait JsonControllerSpec[Controller <: InjectedController with JsonController] extends BaseSpec[Controller] with NoSlick {
+trait UserControllerSpec[Controller <: InjectedController with UserController] extends BaseSpec[Controller] with NoSlick {
 
   private def _initializeMock(evaluationUsers: Seq[EvaluationUser]) = {
     val (useApiDestination, evaluationAggregator) = super.initializeMock(evaluationUsers)
@@ -40,7 +40,7 @@ trait JsonControllerSpec[Controller <: InjectedController with JsonController] e
         ),
       ))
       val controller = initializeTarget(useApiDestination, evaluationAggregator)
-      val result = controller.index("projectId", Some(1), Some(1), "apiKey")(request)
+      val result = controller.queryUsers("projectId", Some(1), Some(1), "apiKey")(request)
       Helpers.status(result) mustBe Status.OK
       Helpers.contentAsJson(result) mustBe Json.arr(
         Json.obj(

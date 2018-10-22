@@ -12,7 +12,7 @@ class ManagementController @Inject()(
                                       val useApiDestination: UseApiDestination,
                                       val evaluationAggregator: EvaluationAggregator,
                                     )(implicit val ec: ExecutionContext) extends InjectedController
-  with JsonController
+  with UserController
   with TypetalkController
   with HasTargetActivityTypeGroup
 {

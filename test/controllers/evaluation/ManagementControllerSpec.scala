@@ -3,7 +3,7 @@ package controllers.evaluation
 import models.Activity
 import services._
 
-class ManagementControllerSpec extends JsonControllerSpec[ManagementController] with TypetalkControllerSpec[ManagementController] {
+class ManagementControllerSpec extends UserControllerSpec[ManagementController] with TypetalkControllerSpec[ManagementController] {
 
   import scala.concurrent.ExecutionContext.Implicits.global
 

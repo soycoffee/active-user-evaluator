@@ -3,7 +3,7 @@ package controllers.evaluation
 import models.Activity
 import services._
 
-class DocumentControllerSpec extends JsonControllerSpec[DocumentController] with TypetalkControllerSpec[DocumentController] {
+class DocumentControllerSpec extends UserControllerSpec[DocumentController] with TypetalkControllerSpec[DocumentController] {
 
   import scala.concurrent.ExecutionContext.Implicits.global
 
