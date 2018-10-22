@@ -1,14 +1,14 @@
-package controllers
+package controllers.evaluation
 
 import models.Activity
 import services._
 
-class ManagementEvaluationControllerSpec extends EvaluationControllerSpec {
+class ManagementControllerSpec extends JsonControllerSpec {
 
   import scala.concurrent.ExecutionContext.Implicits.global
 
-  override protected val constructController: (UseApiDestination, EvaluationAggregator) => EvaluationController =
-    new ManagementEvaluationController(_, _)
+  override protected val constructController: (UseApiDestination, EvaluationAggregator) => JsonController =
+    new ManagementController(_, _)
 
   override protected val targetActivityTypes: Seq[Activity.Type] = Seq(
     Activity.Type.CreateIssue,

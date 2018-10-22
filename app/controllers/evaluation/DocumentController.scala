@@ -1,4 +1,4 @@
-package controllers
+package controllers.evaluation
 
 import javax.inject._
 import models.Activity
@@ -8,11 +8,11 @@ import services.{EvaluationAggregator, UseApiDestination}
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class ManagementEvaluationController @Inject()(
+class DocumentController @Inject()(
                                       val useApiDestination: UseApiDestination,
                                       val evaluationAggregator: EvaluationAggregator,
-                                    )(implicit val ec: ExecutionContext) extends InjectedController with EvaluationController.WithTypeGroup {
+                                    )(implicit val ec: ExecutionContext) extends InjectedController with JsonController.WithTypeGroup {
 
-  override val targetActivityTypeGroup: Activity.TypeGroup = Activity.TypeGroup.Management
+  override val targetActivityTypeGroup: Activity.TypeGroup = Activity.TypeGroup.Document
 
 }

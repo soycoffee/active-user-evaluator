@@ -1,4 +1,4 @@
-package controllers
+package controllers.evaluation
 
 import models._
 import play.api.libs.json.Json
@@ -7,7 +7,7 @@ import services.{EvaluationAggregator, UseApiDestination}
 
 import scala.concurrent.ExecutionContext
 
-trait EvaluationController extends BaseController {
+trait JsonController extends BaseController {
 
   val useApiDestination: UseApiDestination
   val evaluationAggregator: EvaluationAggregator
@@ -25,9 +25,9 @@ trait EvaluationController extends BaseController {
 
 }
 
-object EvaluationController {
+object JsonController {
 
-  trait WithTypeGroup extends EvaluationController {
+  trait WithTypeGroup extends JsonController {
 
     def targetActivityTypeGroup: Activity.TypeGroup
 

@@ -1,14 +1,14 @@
-package controllers
+package controllers.evaluation
 
 import models.Activity
 import services._
 
-class DocumentEvaluationControllerSpec extends EvaluationControllerSpec {
+class DocumentControllerSpec extends JsonControllerSpec {
 
   import scala.concurrent.ExecutionContext.Implicits.global
 
-  override protected val constructController: (UseApiDestination, EvaluationAggregator) => EvaluationController =
-    new DocumentEvaluationController(_, _)
+  override protected val constructController: (UseApiDestination, EvaluationAggregator) => JsonController =
+    new DocumentController(_, _)
 
   override protected val targetActivityTypes: Seq[Activity.Type] = Seq(
     Activity.Type.CreateWiki,

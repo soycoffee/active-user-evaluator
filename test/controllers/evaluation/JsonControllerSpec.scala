@@ -1,4 +1,4 @@
-package controllers
+package controllers.evaluation
 
 import java.time.LocalDateTime
 
@@ -17,9 +17,9 @@ import test.helpers.NoSlick
 
 import scala.concurrent.Future
 
-trait EvaluationControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with NoSlick {
+trait JsonControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with NoSlick {
 
-  protected val constructController: (UseApiDestination, EvaluationAggregator) => EvaluationController
+  protected val constructController: (UseApiDestination, EvaluationAggregator) => JsonController
 
   protected val targetActivityTypes: Seq[Activity.Type]
 
