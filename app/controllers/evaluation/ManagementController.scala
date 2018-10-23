@@ -18,6 +18,6 @@ class ManagementController @Inject()(
 {
 
   override val targetActivityTypeGroup: Activity.TypeGroup = Activity.TypeGroup.Management
-  override val typetalkMessageLabel = "マネジメント系アクティビティ ( 課題 / マイルストーン )"
+  override val typetalkMessageLabelKey = "evaluation.management.typetalk.message.label"
 
 }

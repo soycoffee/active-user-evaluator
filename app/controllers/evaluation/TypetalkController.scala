@@ -1,6 +1,7 @@
 package controllers.evaluation
 
 import models._
+import play.api.i18n.Lang
 import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.mvc._
 import services.{BacklogApiClient, EvaluationAggregator, UseApiDestination}
@@ -15,7 +16,9 @@ trait TypetalkController extends BaseController with HasTargetActivityTypes {
   val evaluationAggregator: EvaluationAggregator
   implicit val ec: ExecutionContext
 
-  def typetalkMessageLabel: String
+  private implicit lazy val lang: Lang = supportedLangs.availables.head
+
+  def typetalkMessageLabelKey: String
 
   def typetalkWebhook(projectId: String, apiKey: String): Action[JsValue] = Action.async(parse.json) { implicit request =>
     withRequestParameter { (postMessage, replyFrom) =>
@@ -30,6 +33,9 @@ trait TypetalkController extends BaseController with HasTargetActivityTypes {
       Future.successful(BadRequest(error.toString))
     }
   }
+
+  lazy val typetalkMessageLabel : String =
+    messagesApi(typetalkMessageLabelKey)
 
   private def withRequestParameter[T](f: (String, Long) => T)(implicit request: Request[JsValue]) = {
     for {

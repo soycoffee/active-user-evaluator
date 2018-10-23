@@ -18,6 +18,6 @@ class ImplementController @Inject()(
 {
 
   override val targetActivityTypeGroup: Activity.TypeGroup = Activity.TypeGroup.Implement
-  override val typetalkMessageLabel: String = "実装系アクティビティ ( Git )"
+  override val typetalkMessageLabelKey: String = "evaluation.implement.typetalk.message.label"
 
 }

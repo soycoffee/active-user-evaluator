@@ -18,6 +18,6 @@ class DocumentController @Inject()(
 {
 
   override val targetActivityTypeGroup: Activity.TypeGroup = Activity.TypeGroup.Document
-  override val typetalkMessageLabel: String = "ドキュメント系アクティビティ ( Wiki / ファイル )"
+  override val typetalkMessageLabelKey: String = "evaluation.document.typetalk.message.label"
 
 }
