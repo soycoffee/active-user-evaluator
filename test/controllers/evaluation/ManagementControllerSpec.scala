@@ -5,8 +5,6 @@ import services._
 
 class ManagementControllerSpec extends UserControllerSpec[ManagementController] with TypetalkControllerSpec[ManagementController] {
 
-  import scala.concurrent.ExecutionContext.Implicits.global
-
   override protected val constructController: (UseApiDestination, EvaluationAggregator) => ManagementController =
     new ManagementController(_, _)
 

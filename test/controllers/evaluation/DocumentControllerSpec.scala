@@ -5,8 +5,6 @@ import services._
 
 class DocumentControllerSpec extends UserControllerSpec[DocumentController] with TypetalkControllerSpec[DocumentController] {
 
-  import scala.concurrent.ExecutionContext.Implicits.global
-
   override protected val constructController: (UseApiDestination, EvaluationAggregator) => DocumentController =
     new DocumentController(_, _)
 

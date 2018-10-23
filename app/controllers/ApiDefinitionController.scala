@@ -17,9 +17,11 @@ class ApiDefinitionController @Inject()(
                                          apiDefinitionInitializer: ApiDefinitionInitializer,
                                          apiDefinitionKeyGenerator: ApiDefinitionKeyGenerator,
                                          operationKeyAuthenticated: OperationKeyAuthenticated,
-                                       )(implicit ec: ExecutionContext) extends InjectedController {
+                                       ) extends InjectedController {
 
   apiDefinitionInitializer()
+
+  implicit lazy val ec: ExecutionContext = defaultExecutionContext
 
   def query: Action[AnyContent] = operationKeyAuthenticated.async {
     apiDefinitionDao.all()

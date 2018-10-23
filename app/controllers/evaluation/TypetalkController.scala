@@ -18,9 +18,10 @@ trait TypetalkController extends BaseController with HasTargetActivityTypes {
 
   val useApiDestination: UseApiDestination
   val evaluationAggregator: EvaluationAggregator
-  implicit val ec: ExecutionContext
 
   def typetalkMessageLabelKey: String
+
+  private implicit lazy val ec: ExecutionContext = defaultExecutionContext
 
   private implicit lazy val lang: Lang = supportedLangs.availables.head
 

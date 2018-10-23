@@ -5,8 +5,6 @@ import services._
 
 class ImplementControllerSpec extends UserControllerSpec[ImplementController] with TypetalkControllerSpec[ImplementController] {
 
-  import scala.concurrent.ExecutionContext.Implicits.global
-
   override protected val constructController: (UseApiDestination, EvaluationAggregator) => ImplementController =
     new ImplementController(_, _)
 

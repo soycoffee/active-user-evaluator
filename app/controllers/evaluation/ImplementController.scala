@@ -11,7 +11,7 @@ import scala.concurrent.ExecutionContext
 class ImplementController @Inject()(
                                      val useApiDestination: UseApiDestination,
                                      val evaluationAggregator: EvaluationAggregator,
-                                    )(implicit val ec: ExecutionContext) extends InjectedController
+                                    ) extends InjectedController
   with UserController
   with TypetalkController
   with HasTargetActivityTypeGroup
