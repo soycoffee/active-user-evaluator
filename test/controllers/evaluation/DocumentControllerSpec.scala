@@ -5,8 +5,8 @@ import services._
 
 class DocumentControllerSpec extends UserControllerSpec[DocumentController] with TypetalkControllerSpec[DocumentController] {
 
-  override protected val constructController: (UseApiDestination, EvaluationAggregator) => DocumentController =
-    new DocumentController(_, _)
+  override protected def constructController: (UseApiDestination, EvaluationAggregator, TypetalkMessageBuilder) => DocumentController =
+    new DocumentController(_, _, _)
 
   override protected val targetActivityTypes: Seq[Activity.Type] = Seq(
     Activity.Type.CreateWiki,

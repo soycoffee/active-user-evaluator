@@ -5,8 +5,8 @@ import services._
 
 class ImplementControllerSpec extends UserControllerSpec[ImplementController] with TypetalkControllerSpec[ImplementController] {
 
-  override protected val constructController: (UseApiDestination, EvaluationAggregator) => ImplementController =
-    new ImplementController(_, _)
+  override protected def constructController: (UseApiDestination, EvaluationAggregator, TypetalkMessageBuilder) => ImplementController =
+    new ImplementController(_, _, _)
 
   override protected val targetActivityTypes: Seq[Activity.Type] = Seq(
     Activity.Type.CreateGitPush,

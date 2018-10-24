@@ -57,7 +57,7 @@ trait UserControllerSpec[Controller <: InjectedController with UserController] e
           ),
         ),
       )
-      Mockito.verify(evaluationAggregator).queryEvaluationUsers("projectId", targetActivityTypes, Some(1), Some(1))(apiDestination)
+      Mockito.verify(evaluationAggregator).queryEvaluationUsers(targetActivityTypes, "projectId", Some(1), Some(1))(apiDestination)
     }
 
   }

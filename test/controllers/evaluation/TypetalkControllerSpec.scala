@@ -1,7 +1,6 @@
 package controllers.evaluation
 
-import controllers.evaluation.TypetalkController.WebhookBody
-import models.{EvaluationActivity, EvaluationUser, User}
+import models.{EvaluationActivity, EvaluationUser, TypetalkWebhookBody, User}
 import org.mockito.Mockito
 import play.api.http.Status
 import play.api.libs.json.Json
@@ -14,9 +13,9 @@ trait TypetalkControllerSpec[Controller <: TypetalkController with InjectedContr
 
   protected val typetalkMessageLabel: String
 
-  private def initializeMock(requestBody: WebhookBody, evaluationUsers: Seq[EvaluationUser]) = {
+  private def initializeMock(requestBody: TypetalkWebhookBody, evaluationUsers: Seq[EvaluationUser]) = {
     val (useApiDestination, evaluationAggregator) = super.initializeMock(evaluationUsers)
-    val request = mock[Request[TypetalkController.WebhookBody]]
+    val request = mock[Request[TypetalkWebhookBody]]
     Mockito.when(request.body) thenReturn requestBody
     Mockito.when(request.contentType) thenReturn Some("application/json")
     (request, useApiDestination, evaluationAggregator)
@@ -34,7 +33,7 @@ trait TypetalkControllerSpec[Controller <: TypetalkController with InjectedContr
 
     "OK" in {
       val (request, useApiDestination, evaluationAggregator) = initializeMock(
-        WebhookBody("", 1),
+        TypetalkWebhookBody("", 1),
         Seq(
           buildEvaluationUser("a", "A", 3),
           buildEvaluationUser("b", "B", 2),
@@ -54,7 +53,7 @@ trait TypetalkControllerSpec[Controller <: TypetalkController with InjectedContr
           """.stripMargin.trim,
         "replyTo" -> 1,
       )
-      Mockito.verify(evaluationAggregator).queryEvaluationUsers("projectId", targetActivityTypes, None, None)(apiDestination)
+      Mockito.verify(evaluationAggregator).queryEvaluationUsers(targetActivityTypes, "projectId", None, None)(apiDestination)
     }
 
   }

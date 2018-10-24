@@ -59,6 +59,12 @@ object Activity {
     case object Document extends TypeGroup
     case object Implement extends TypeGroup
 
+    val Values = Seq(
+      Management,
+      Document,
+      Implement,
+    )
+
   }
 
   implicit val responseReads: Reads[Activity] = (

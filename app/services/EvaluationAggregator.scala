@@ -14,10 +14,10 @@ class EvaluationAggregator @Inject()(
                                       evaluationUserArranger: EvaluationUserArranger,
                                     )(implicit val ec: ExecutionContext) {
 
-  def queryEvaluationUsers(projectId: String, activityTypes: Seq[Activity.Type], count: Option[Int], sinceBeforeDays: Option[Int])(implicit destination: BacklogApiClient.Destination): Future[Seq[EvaluationUser]] =
+  def queryEvaluationUsers(activityTypes: Seq[Activity.Type], projectId: String, count: Option[Int], sinceBeforeDays: Option[Int])(implicit destination: BacklogApiClient.Destination): Future[Seq[EvaluationUser]] =
     for {
       users <- queryUsers(projectId)
-      usersActivities <- queryUsersActivities(users.map(_.id), activityTypes)
+      usersActivities <- queryUsersActivities(activityTypes, users.map(_.id))
     } yield {
       evaluationUserArranger(
         (users zip usersActivities
@@ -30,10 +30,10 @@ class EvaluationAggregator @Inject()(
   private def queryUsers(projectId: String)(implicit destination: BacklogApiClient.Destination): Future[Seq[User]] =
     backlogApiClient.queryProjectUsers(projectId)
 
-  private def queryUsersActivities(userIds: Seq[Long], activityTypes: Seq[Activity.Type])(implicit destination: BacklogApiClient.Destination): Future[Seq[Seq[Activity]]] =
-    Future.sequence(userIds.map(queryUserActivitiesByTypes(_, activityTypes)))
+  private def queryUsersActivities(activityTypes: Seq[Activity.Type], userIds: Seq[Long])(implicit destination: BacklogApiClient.Destination): Future[Seq[Seq[Activity]]] =
+    Future.sequence(userIds.map(queryUserActivitiesByTypes(activityTypes, _)))
 
-  private def queryUserActivitiesByTypes(userId: Long, activityTypes: Seq[Activity.Type])(implicit destination: BacklogApiClient.Destination): Future[Seq[Activity]] =
+  private def queryUserActivitiesByTypes(activityTypes: Seq[Activity.Type], userId: Long)(implicit destination: BacklogApiClient.Destination): Future[Seq[Activity]] =
     // 直列に実行するため、 foldLeft を用いる。
     // 並列に実行すると、 API にアクセスを制限されてしまう。
     activityTypes.foldLeft(Future.successful(Nil: Seq[Activity]))({ (activities$, activityType) =>

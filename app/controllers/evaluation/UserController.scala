@@ -15,7 +15,7 @@ trait UserController extends BaseController with HasTargetActivityTypes {
 
   def queryUsers(projectId: String, count: Option[Int], sinceBeforeDays: Option[Int], apiKey: String): Action[AnyContent] = Action.async {
     useApiDestination(apiKey) { implicit destination =>
-      evaluationAggregator.queryEvaluationUsers(projectId, targetActivityTypes, count, sinceBeforeDays)
+      evaluationAggregator.queryEvaluationUsers(targetActivityTypes, projectId, count, sinceBeforeDays)
         .map(Json.toJson(_))
         .map(Ok(_))
     }

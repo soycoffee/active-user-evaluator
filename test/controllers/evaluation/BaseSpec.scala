@@ -6,13 +6,14 @@ import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.mvc._
-import services.{BacklogApiClient, EvaluationAggregator, UseApiDestination}
+import services.{BacklogApiClient, EvaluationAggregator, TypetalkMessageBuilder, UseApiDestination}
 
 import scala.concurrent.Future
 
 trait BaseSpec[Controller <: InjectedController] extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar {
 
-  protected val constructController: (UseApiDestination, EvaluationAggregator) => Controller
+  protected def constructController: (UseApiDestination, EvaluationAggregator, TypetalkMessageBuilder) => Controller
+
   protected val targetActivityTypes: Seq[Activity.Type]
 
   protected implicit val apiDestination: BacklogApiClient.Destination = BacklogApiClient.Destination("example.com", "")
@@ -27,7 +28,8 @@ trait BaseSpec[Controller <: InjectedController] extends PlaySpec with GuiceOneS
   }
 
   protected def initializeTarget(useApiDestination: UseApiDestination, evaluationAggregator: EvaluationAggregator): Controller = {
-    val controller = constructController(useApiDestination, evaluationAggregator)
+    val typetalkMessageBuilder = new TypetalkMessageBuilder()(scala.concurrent.ExecutionContext.global)
+    val controller = constructController(useApiDestination, evaluationAggregator, typetalkMessageBuilder)
     controller.setControllerComponents(app.injector.instanceOf[ControllerComponents])
     controller
   }
