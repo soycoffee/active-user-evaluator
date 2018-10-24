@@ -9,14 +9,7 @@ class ImplementControllerSpec extends UserControllerSpec[ImplementController] wi
   override protected def constructController: (UseApiDestination, EvaluationAggregator, WebhookResponseBodyBuilder) => ImplementController =
     new ImplementController(_, _, _)
 
-  override protected val targetActivityTypes: Seq[Activity.Type] = Seq(
-    Activity.Type.CreateGitPush,
-    Activity.Type.CreateGitRepository,
-    Activity.Type.CreatePullRequest,
-    Activity.Type.UpdatePullRequest,
-    Activity.Type.CreatePullRequestComment,
-  )
-
-  override protected val typetalkMessageLabel: String = "実装系アクティビティ ( Git )"
+  override protected val targetActivityTypes: Seq[Activity.Type] = BaseHelper.implementActivityTypes
+  override protected val typetalkMessageLabel: String = BaseHelper.implementTypetalkMessageLabel
 
 }

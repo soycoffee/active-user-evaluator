@@ -9,15 +9,7 @@ class ManagementControllerSpec extends UserControllerSpec[ManagementController] 
   override protected def constructController: (UseApiDestination, EvaluationAggregator, WebhookResponseBodyBuilder) => ManagementController =
     new ManagementController(_, _, _)
 
-  override protected val targetActivityTypes: Seq[Activity.Type] = Seq(
-    Activity.Type.CreateIssue,
-    Activity.Type.UpdateIssue,
-    Activity.Type.CreateIssueComment,
-    Activity.Type.UpdateMultiIssue,
-    Activity.Type.CreateVersion,
-    Activity.Type.UpdateVersion,
-  )
-
-  override protected val typetalkMessageLabel: String = "マネジメント系アクティビティ ( 課題 / マイルストーン )"
+  override protected val targetActivityTypes: Seq[Activity.Type] = BaseHelper.managementActivityTypes
+  override protected val typetalkMessageLabel: String = BaseHelper.managementTypetalkMessageLabel
 
 }

@@ -22,6 +22,9 @@ class AllController @Inject()(
   private implicit lazy val ec: ExecutionContext = defaultExecutionContext
   private implicit lazy val lang: Lang = supportedLangs.availables.head
 
+  private lazy val activityTypeGroupLabels: Seq[String] =
+    activityTypeGroupLabelKeys.map(messagesApi(_))
+
   def typetalkWebhook(projectId: String, apiKey: String): Action[WebhookRequestBody] = Action.async(parse.json[WebhookRequestBody]) { implicit request =>
     val WebhookRequestBody(count, sinceBeforeDays, replyFrom) = request.body
     useApiDestination(apiKey) { implicit destination =>
@@ -29,7 +32,7 @@ class AllController @Inject()(
         groupedActivityTypes
           .map(evaluationAggregator.queryEvaluationUsers(_, projectId, count, sinceBeforeDays))
       )
-        .map(_ zip ActivityTypeGroupLabelKeys)
+        .map(_ zip activityTypeGroupLabels)
         .map(webhookResponseBuilder(destination.domain, _, replyFrom))
         .map(Ok(_))
     }
@@ -39,19 +42,18 @@ class AllController @Inject()(
 
 object AllController {
 
-  val ActivityTypeGroups = Seq(
-    Activity.TypeGroup.Management,
-    Activity.TypeGroup.Document,
-    Activity.TypeGroup.Implement,
-  )
+  private lazy val groupedActivityTypes: Seq[Seq[Activity.Type]] =
+    Seq(
+      Activity.TypeGroup.Management,
+      Activity.TypeGroup.Document,
+      Activity.TypeGroup.Implement,
+    )
+      .map(group => Activity.Type.Values.filter(_.group == group))
 
-  val ActivityTypeGroupLabelKeys = Seq(
+  private val activityTypeGroupLabelKeys = Seq(
     "evaluation.management.typetalk.message.label",
     "evaluation.document.typetalk.message.label",
     "evaluation.implement.typetalk.message.label",
   )
-
-  private lazy val groupedActivityTypes: Seq[Seq[Activity.Type]] =
-    ActivityTypeGroups.map(group => Activity.Type.Values.filter(_.group == group))
 
 }

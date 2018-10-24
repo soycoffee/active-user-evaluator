@@ -9,13 +9,7 @@ class DocumentControllerSpec extends UserControllerSpec[DocumentController] with
   override protected def constructController: (UseApiDestination, EvaluationAggregator, WebhookResponseBodyBuilder) => DocumentController =
     new DocumentController(_, _, _)
 
-  override protected val targetActivityTypes: Seq[Activity.Type] = Seq(
-    Activity.Type.CreateWiki,
-    Activity.Type.UpdateWiki,
-    Activity.Type.CreateFile,
-    Activity.Type.UpdateFile,
-  )
-
-  override protected val typetalkMessageLabel: String = "ドキュメント系アクティビティ ( Wiki / ファイル )"
+  override protected val targetActivityTypes: Seq[Activity.Type] = BaseHelper.documentActivityTypes
+  override protected val typetalkMessageLabel: String = BaseHelper.documentTypetalkMessageLabel
 
 }
