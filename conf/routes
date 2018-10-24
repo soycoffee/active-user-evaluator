@@ -4,6 +4,7 @@ GET /projects/:projectId/evaluation/document controllers.evaluation.DocumentCont
 POST /projects/:projectId/evaluation/implement/typetalk controllers.evaluation.ImplementController.typetalkWebhook(projectId: String, apiKey: String)
 POST /projects/:projectId/evaluation/management/typetalk controllers.evaluation.ManagementController.typetalkWebhook(projectId: String, apiKey: String)
 POST /projects/:projectId/evaluation/document/typetalk controllers.evaluation.DocumentController.typetalkWebhook(projectId: String, apiKey: String)
+POST /projects/:projectId/evaluation/all/typetalk controllers.evaluation.AllController.typetalkWebhook(projectId: String, apiKey: String)
 GET /apiDefinitions controllers.ApiDefinitionController.query
 POST /apiDefinitions controllers.ApiDefinitionController.create
 PUT /apiDefinitions controllers.ApiDefinitionController.update
