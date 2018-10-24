@@ -37,27 +37,9 @@ class ApiDefinitionControllerSpec extends PlaySpec with GuiceOneServerPerSuite {
     wsCall(call)
       .withQueryStringParameters("operationKey" -> "dev")
 
-  "UNAUTHORIZED" should {
-
-    for(call <- Seq(
-      routes.ApiDefinitionController.query(),
-      routes.ApiDefinitionController.create(),
-      routes.ApiDefinitionController.update(),
-      routes.ApiDefinitionController.delete("x"),
-    )) {
-
-      s"${call.method} ${call.url}" in {
-        val response = await(
-          wsCall(call)
-            .withQueryStringParameters("operationKey" -> "invalid")
-            .execute(),
-        )
-        response.status mustBe UNAUTHORIZED
-      }
-
-    }
-
-  }
+  private def noAuthenticated(call: Call) =
+    wsCall(call)
+      .withQueryStringParameters("operationKey" -> "invalid")
 
   "query" should {
 
@@ -71,6 +53,10 @@ class ApiDefinitionControllerSpec extends PlaySpec with GuiceOneServerPerSuite {
           "backlogApiKey" -> "LgEEkyZBDoToHZxD3kbmjWrr4nOWSWaiB98ZX4sYQvkvfszIQ2AJRwpokMRJIPTJ",
         ),
       )
+    }
+
+    "UNAUTHORIZED" in {
+      await(noAuthenticated(routes.ApiDefinitionController.query()).get()).status mustBe UNAUTHORIZED
     }
 
   }
@@ -92,6 +78,14 @@ class ApiDefinitionControllerSpec extends PlaySpec with GuiceOneServerPerSuite {
       val queryObjects = queryResponse.json.as[Seq[JsValue]]
       queryObjects must have length 2
       queryObjects.last mustBe requestBodyWithKey
+    }
+
+    "UNAUTHORIZED" in {
+      val requestBody = Json.obj(
+        "backlogDomain" -> "",
+        "backlogApiKey" -> "",
+      )
+      await(noAuthenticated(routes.ApiDefinitionController.create()).post(requestBody)).status mustBe UNAUTHORIZED
     }
 
   }
@@ -122,6 +116,15 @@ class ApiDefinitionControllerSpec extends PlaySpec with GuiceOneServerPerSuite {
       response.status mustBe NOT_FOUND
     }
 
+    "UNAUTHORIZED" in {
+      val requestBody = Json.obj(
+        "key" -> "",
+        "backlogDomain" -> "",
+        "backlogApiKey" -> "",
+      )
+      await(noAuthenticated(routes.ApiDefinitionController.query()).put(requestBody)).status mustBe UNAUTHORIZED
+    }
+
   }
 
   "delete" should {
@@ -139,6 +142,10 @@ class ApiDefinitionControllerSpec extends PlaySpec with GuiceOneServerPerSuite {
       val requestKey = "notExistsKey"
       val response = await(authenticated(routes.ApiDefinitionController.delete(requestKey)).delete())
       response.status mustBe NOT_FOUND
+    }
+
+    "UNAUTHORIZED" in {
+      await(noAuthenticated(routes.ApiDefinitionController.delete("x")).delete()).status mustBe UNAUTHORIZED
     }
 
   }
