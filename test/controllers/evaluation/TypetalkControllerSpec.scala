@@ -1,6 +1,7 @@
 package controllers.evaluation
 
-import models.{EvaluationActivity, EvaluationUser, TypetalkWebhookBody, User}
+import models.typetalk.WebhookRequestBody
+import models.{EvaluationActivity, EvaluationUser, User}
 import org.mockito.Mockito
 import play.api.http.Status
 import play.api.libs.json.Json
@@ -13,9 +14,9 @@ trait TypetalkControllerSpec[Controller <: TypetalkController with InjectedContr
 
   protected val typetalkMessageLabel: String
 
-  private def initializeMock(requestBody: TypetalkWebhookBody, evaluationUsers: Seq[EvaluationUser]) = {
+  private def initializeMock(requestBody: WebhookRequestBody, evaluationUsers: Seq[EvaluationUser]) = {
     val (useApiDestination, evaluationAggregator) = super.initializeMock(evaluationUsers)
-    val request = mock[Request[TypetalkWebhookBody]]
+    val request = mock[Request[WebhookRequestBody]]
     Mockito.when(request.body) thenReturn requestBody
     Mockito.when(request.contentType) thenReturn Some("application/json")
     (request, useApiDestination, evaluationAggregator)
@@ -33,7 +34,7 @@ trait TypetalkControllerSpec[Controller <: TypetalkController with InjectedContr
 
     "OK" in {
       val (request, useApiDestination, evaluationAggregator) = initializeMock(
-        TypetalkWebhookBody("", 1),
+        WebhookRequestBody("", 1),
         Seq(
           buildEvaluationUser("a", "A", 3),
           buildEvaluationUser("b", "B", 2),

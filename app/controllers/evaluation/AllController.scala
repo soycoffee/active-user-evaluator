@@ -1,11 +1,13 @@
 package controllers.evaluation
 
 import javax.inject._
-import models.{Activity, TypetalkWebhookBody}
+import models.Activity
+import models.typetalk.WebhookRequestBody
 import play.api.i18n.Lang
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc._
-import services.{EvaluationAggregator, TypetalkMessageBuilder, UseApiDestination}
+import services.typetalk.WebhookResponseBodyBuilder
+import services.{EvaluationAggregator, UseApiDestination}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -13,7 +15,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class AllController @Inject()(
                                useApiDestination: UseApiDestination,
                                evaluationAggregator: EvaluationAggregator,
-                               typetalkMessageBuilder: TypetalkMessageBuilder,
+                               typetalkMessageBuilder: WebhookResponseBodyBuilder,
                              ) extends InjectedController {
 
   import AllController._
@@ -21,8 +23,8 @@ class AllController @Inject()(
   private implicit lazy val ec: ExecutionContext = defaultExecutionContext
   private implicit lazy val lang: Lang = supportedLangs.availables.head
 
-  def typetalkWebhook(projectId: String, apiKey: String): Action[TypetalkWebhookBody] = Action.async(parse.json[TypetalkWebhookBody]) { implicit request =>
-    val TypetalkWebhookBody(count, sinceBeforeDays, replyFrom) = request.body
+  def typetalkWebhook(projectId: String, apiKey: String): Action[WebhookRequestBody] = Action.async(parse.json[WebhookRequestBody]) { implicit request =>
+    val WebhookRequestBody(count, sinceBeforeDays, replyFrom) = request.body
     useApiDestination(apiKey) { implicit destination =>
       Future.sequence(
         for ((activityTypes, label) <-  groupedActivityTypesWithLabel) yield {
