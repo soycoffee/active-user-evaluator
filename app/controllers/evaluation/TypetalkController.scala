@@ -15,9 +15,9 @@ trait TypetalkController extends BaseController with HasTargetActivityTypes {
 
   val useApiDestination: UseApiDestination
   val evaluationAggregator: EvaluationAggregator
-  val typetalkMessageBuilder: WebhookResponseBodyBuilder
+  val webhookResponseBuilder: WebhookResponseBodyBuilder
 
-  def typetalkMessageLabelKey: String
+  val typetalkMessageLabelKey: String
 
   private implicit lazy val ec: ExecutionContext = defaultExecutionContext
   private implicit lazy val lang: Lang = supportedLangs.availables.head
@@ -29,16 +29,9 @@ trait TypetalkController extends BaseController with HasTargetActivityTypes {
     val WebhookRequestBody(count, sinceBeforeDays, replyFrom) = request.body
     useApiDestination(apiKey) { implicit destination =>
       evaluationAggregator.queryEvaluationUsers(targetActivityTypes, projectId, count, sinceBeforeDays)
-        .map(typetalkMessageBuilder(typetalkMessageLabel, _))
-        .map(buildResponseBody(_, replyFrom))
+        .map(webhookResponseBuilder(destination.domain, _, typetalkMessageLabel, replyFrom))
         .map(Ok(_))
     }
   }
-
-  private def buildResponseBody(message: String, replyTo: Long): JsObject =
-    Json.obj(
-      "message" -> message,
-      "replyTo" -> replyTo,
-    )
 
 }

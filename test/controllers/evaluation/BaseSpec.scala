@@ -29,7 +29,7 @@ trait BaseSpec[Controller <: InjectedController] extends PlaySpec with GuiceOneS
   }
 
   protected def initializeTarget(useApiDestination: UseApiDestination, evaluationAggregator: EvaluationAggregator): Controller = {
-    val typetalkMessageBuilder = new WebhookResponseBodyBuilder()(scala.concurrent.ExecutionContext.global)
+    val typetalkMessageBuilder = new WebhookResponseBodyBuilder()
     val controller = constructController(useApiDestination, evaluationAggregator, typetalkMessageBuilder)
     controller.setControllerComponents(app.injector.instanceOf[ControllerComponents])
     controller

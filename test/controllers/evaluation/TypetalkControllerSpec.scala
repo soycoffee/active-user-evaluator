@@ -47,10 +47,12 @@ trait TypetalkControllerSpec[Controller <: TypetalkController with InjectedContr
       Helpers.contentAsJson(result) mustBe Json.obj(
         "message" ->
           s"""|
+            |----------------
             |$typetalkMessageLabel
             |1. [A](https://example.com/user/a) ( 3 points )
             |2. [B](https://example.com/user/b) ( 2 points )
             |3. [C](https://example.com/user/c) ( 1 points )
+            |----------------
           """.stripMargin.trim,
         "replyTo" -> 1,
       )

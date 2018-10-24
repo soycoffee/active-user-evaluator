@@ -4,7 +4,6 @@ import javax.inject._
 import models.Activity
 import models.typetalk.WebhookRequestBody
 import play.api.i18n.Lang
-import play.api.libs.json.{JsObject, Json}
 import play.api.mvc._
 import services.typetalk.WebhookResponseBodyBuilder
 import services.{EvaluationAggregator, UseApiDestination}
@@ -15,7 +14,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class AllController @Inject()(
                                useApiDestination: UseApiDestination,
                                evaluationAggregator: EvaluationAggregator,
-                               typetalkMessageBuilder: WebhookResponseBodyBuilder,
+                               webhookResponseBuilder: WebhookResponseBodyBuilder,
                              ) extends InjectedController {
 
   import AllController._
@@ -27,24 +26,14 @@ class AllController @Inject()(
     val WebhookRequestBody(count, sinceBeforeDays, replyFrom) = request.body
     useApiDestination(apiKey) { implicit destination =>
       Future.sequence(
-        for ((activityTypes, label) <-  groupedActivityTypesWithLabel) yield {
-          evaluationAggregator.queryEvaluationUsers(activityTypes, projectId, count, sinceBeforeDays)
-            .map(typetalkMessageBuilder(label, _))
-        }
+        groupedActivityTypes
+          .map(evaluationAggregator.queryEvaluationUsers(_, projectId, count, sinceBeforeDays))
       )
-        .map(buildResponseBody(_, replyFrom))
+        .map(_ zip ActivityTypeGroupLabelKeys)
+        .map(webhookResponseBuilder(destination.domain, _, replyFrom))
         .map(Ok(_))
     }
   }
-
-  private lazy val groupedActivityTypesWithLabel: Seq[(Seq[Activity.Type], String)] =
-    ActivityTypeGroups.map(group => Activity.Type.Values.filter(_.group == group)) zip ActivityTypeGroupLabelKeys.map(messagesApi(_))
-
-  private def buildResponseBody(messages: Seq[String], replyTo: Long): JsObject =
-    Json.obj(
-      "message" -> messages.mkString("\n\n"),
-      "replyTo" -> replyTo,
-    )
 
 }
 
@@ -61,5 +50,8 @@ object AllController {
     "evaluation.document.typetalk.message.label",
     "evaluation.implement.typetalk.message.label",
   )
+
+  private lazy val groupedActivityTypes: Seq[Seq[Activity.Type]] =
+    ActivityTypeGroups.map(group => Activity.Type.Values.filter(_.group == group))
 
 }

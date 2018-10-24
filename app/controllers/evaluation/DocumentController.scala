@@ -10,7 +10,7 @@ import services.{EvaluationAggregator, UseApiDestination}
 class DocumentController @Inject()(
                                     val useApiDestination: UseApiDestination,
                                     val evaluationAggregator: EvaluationAggregator,
-                                    val typetalkMessageBuilder: WebhookResponseBodyBuilder,
+                                    val webhookResponseBuilder: WebhookResponseBodyBuilder,
                                   ) extends InjectedController
   with UserController
   with TypetalkController
