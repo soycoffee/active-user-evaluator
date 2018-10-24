@@ -19,7 +19,7 @@ trait UserControllerSpec[Controller <: InjectedController with UserController] e
     (request, useApiDestination, evaluationAggregator)
   }
 
-  "index" should {
+  "queryUsers" should {
 
     "OK" in  {
       val (request, useApiDestination, evaluationAggregator) = _initializeMock(Seq(
