@@ -1,25 +1,41 @@
 package controllers.evaluation
 
 import models.typetalk.WebhookRequestBody
-import models.{EvaluationActivity, EvaluationUser, User}
+import models.{Activity, EvaluationActivity, EvaluationUser, User}
 import org.mockito.Mockito
+import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.mvc._
 import play.api.test.Helpers._
 import play.api.test._
+import services.typetalk.WebhookResponseBodyBuilder
+import services.{EvaluationAggregator, UseApiDestination}
 import test.helpers.NoSlick
 
-trait TypetalkControllerSpec[Controller <: TypetalkController with InjectedController] extends BaseSpec[Controller] with NoSlick {
+trait TypetalkControllerSpec[Controller <: TypetalkController with InjectedController] extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with NoSlick {
 
+  import BaseHelper.apiDestination
+
+  protected val targetActivityTypes: Seq[Activity.Type]
   protected val typetalkMessageLabel: String
 
+  protected def constructController: (UseApiDestination, EvaluationAggregator, WebhookResponseBodyBuilder) => Controller
+
   private def initializeMock(requestBody: WebhookRequestBody, evaluationUsers: Seq[EvaluationUser]) = {
-    val (useApiDestination, evaluationAggregator) = super.initializeMock(evaluationUsers)
+    val (useApiDestination, evaluationAggregator) = BaseHelper.initializeMock(evaluationUsers)
     val request = mock[Request[WebhookRequestBody]]
     Mockito.when(request.body) thenReturn requestBody
     Mockito.when(request.contentType) thenReturn Some("application/json")
     (request, useApiDestination, evaluationAggregator)
+  }
+
+  private def initializeTarget(useApiDestination: UseApiDestination, evaluationAggregator: EvaluationAggregator): Controller = {
+    val controller = constructController(useApiDestination, evaluationAggregator, new WebhookResponseBodyBuilder())
+    controller.setControllerComponents(app.injector.instanceOf[ControllerComponents])
+    controller
   }
 
   "typetalkWebhook" should {
@@ -56,7 +72,7 @@ trait TypetalkControllerSpec[Controller <: TypetalkController with InjectedContr
           """.stripMargin.trim,
         "replyTo" -> 1,
       )
-      Mockito.verify(evaluationAggregator).queryEvaluationUsers(targetActivityTypes, "projectId", None, None)(apiDestination)
+      Mockito.verify(evaluationAggregator).queryEvaluationUsers(targetActivityTypes, "projectId", None, None)
     }
 
   }
