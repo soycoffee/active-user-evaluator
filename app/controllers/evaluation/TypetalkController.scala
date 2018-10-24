@@ -30,7 +30,6 @@ trait TypetalkController extends BaseController with HasTargetActivityTypes {
       evaluationAggregator.queryEvaluationUsers(targetActivityTypes, projectId, count, sinceBeforeDays)
         .map(typetalkMessageBuilder(typetalkMessageLabel, _))
         .map(buildResponseBody(_, replyFrom))
-        .map(Json.toJson(_))
         .map(Ok(_))
     }
   }
