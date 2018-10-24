@@ -29,16 +29,28 @@ class EvaluationUserArrangerSpec extends PlaySpec with GuiceOneServerPerSuite wi
   "defaultCount" in {
     val evaluationUserArranger = initializeTarget()
     val argEvaluationUsers = Seq(
-      EvaluationUser(User(1, null, null), Seq()),
-      EvaluationUser(User(2, null, null), Seq()),
-      EvaluationUser(User(3, null, null), Seq()),
-      EvaluationUser(User(4, null, null), Seq()),
+      EvaluationUser(User(1, null, null), Seq(EvaluationActivity(null, 1))),
+      EvaluationUser(User(2, null, null), Seq(EvaluationActivity(null, 1))),
+      EvaluationUser(User(3, null, null), Seq(EvaluationActivity(null, 1))),
+      EvaluationUser(User(4, null, null), Seq(EvaluationActivity(null, 1))),
     )
     val returnEvaluationUsers = evaluationUserArranger(argEvaluationUsers, None)
     returnEvaluationUsers mustBe Seq(
       argEvaluationUsers(0),
       argEvaluationUsers(1),
       argEvaluationUsers(2),
+    )
+  }
+
+  "filterByPositivePoint" in {
+    val evaluationUserArranger = initializeTarget()
+    val argEvaluationUsers = Seq(
+      EvaluationUser(User(1, null, null), Seq(EvaluationActivity(null, 1))),
+      EvaluationUser(User(2, null, null), Seq(EvaluationActivity(null, 0))),
+    )
+    val returnEvaluationUsers = evaluationUserArranger(argEvaluationUsers, Some(3))
+    returnEvaluationUsers mustBe Seq(
+      argEvaluationUsers(0),
     )
   }
 
