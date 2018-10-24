@@ -12,6 +12,8 @@ import test.helpers.NoSlick
 
 trait TypetalkControllerSpec[Controller <: TypetalkController with InjectedController] extends BaseSpec[Controller] with NoSlick {
 
+  protected val typetalkMessageLabel: String
+
   private def initializeMock(requestBody: WebhookBody, evaluationUsers: Seq[EvaluationUser]) = {
     val (useApiDestination, evaluationAggregator) = super.initializeMock(evaluationUsers)
     val request = mock[Request[TypetalkController.WebhookBody]]
@@ -45,7 +47,7 @@ trait TypetalkControllerSpec[Controller <: TypetalkController with InjectedContr
       Helpers.contentAsJson(result) mustBe Json.obj(
         "message" ->
           s"""|
-            |${controller.typetalkMessageLabel}
+            |$typetalkMessageLabel
             |1. [A](https://example.com/user/a) ( 3 points )
             |2. [B](https://example.com/user/b) ( 2 points )
             |3. [C](https://example.com/user/c) ( 1 points )

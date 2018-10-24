@@ -17,4 +17,6 @@ class ManagementControllerSpec extends UserControllerSpec[ManagementController] 
     Activity.Type.UpdateVersion,
   )
 
+  override protected val typetalkMessageLabel: String = "マネジメント系アクティビティ ( 課題 / マイルストーン )"
+
 }

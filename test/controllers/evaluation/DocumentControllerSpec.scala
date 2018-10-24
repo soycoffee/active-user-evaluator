@@ -15,4 +15,6 @@ class DocumentControllerSpec extends UserControllerSpec[DocumentController] with
     Activity.Type.UpdateFile,
   )
 
+  override protected val typetalkMessageLabel: String = "ドキュメント系アクティビティ ( Wiki / ファイル )"
+
 }

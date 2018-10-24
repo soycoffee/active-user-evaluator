@@ -16,4 +16,6 @@ class ImplementControllerSpec extends UserControllerSpec[ImplementController] wi
     Activity.Type.CreatePullRequestComment,
   )
 
+  override protected val typetalkMessageLabel: String = "実装系アクティビティ ( Git )"
+
 }
