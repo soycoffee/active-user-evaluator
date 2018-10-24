@@ -43,7 +43,7 @@ class ApiDefinitionControllerSpec extends PlaySpec with GuiceOneServerPerSuite {
       routes.ApiDefinitionController.query(),
       routes.ApiDefinitionController.create(),
       routes.ApiDefinitionController.update(),
-      routes.ApiDefinitionController.delete(""),
+      routes.ApiDefinitionController.delete("x"),
     )) {
 
       s"${call.method} ${call.url}" in {
