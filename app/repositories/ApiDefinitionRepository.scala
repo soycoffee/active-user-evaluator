@@ -36,11 +36,11 @@ class ApiDefinitionRepository @Inject()(protected val dbConfigProvider: Database
   def deleteByKey(key: String): Future[Boolean] =
     db.run(ApiDefinitions.filter(_.key === key).delete).map(_ != 0)
 
-  private class ApiDefinitionsTable(tag: Tag) extends Table[ApiDefinition](tag, "API_DEFINITIONS") {
+  private class ApiDefinitionsTable(tag: Tag) extends Table[ApiDefinition](tag, "api_definitions") {
 
-    def key = column[String]("KEY", O.PrimaryKey)
-    def backlog_domain = column[String]("BACKLOG_DOMAIN")
-    def backlog_api_key = column[String]("BACKLOG_API_KEY")
+    def key = column[String]("key", O.PrimaryKey)
+    def backlog_domain = column[String]("backlog_domain")
+    def backlog_api_key = column[String]("backlog_api_key")
 
     def * = (key, backlog_domain, backlog_api_key) <> ((ApiDefinition.apply _).tupled, ApiDefinition.unapply)
 
