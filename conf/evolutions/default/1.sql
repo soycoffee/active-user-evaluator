@@ -1,11 +1,11 @@
 # --- !Ups
 
-CREATE TABLE api_definitions (
-    key varchar(255) NOT NULL PRIMARY KEY,
-    backlog_domain varchar(255) NOT NULL,
-    backlog_api_key varchar(255) NOT NULL
+CREATE TABLE API_DEFINITIONS (
+    KEY varchar(255) NOT NULL PRIMARY KEY,
+    BACKLOG_DOMAIN varchar(255) NOT NULL,
+    BACKLOG_API_KEY varchar(255) NOT NULL
 );
 
 # --- !Downs
 
-DROP TABLE api_definitions;
+DROP TABLE API_DEFINITIONS;
