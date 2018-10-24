@@ -31,15 +31,17 @@ class EvaluationAggregator @Inject()(
     backlogApiClient.queryProjectUsers(projectId)
 
   private def queryUsersActivities(userIds: Seq[Long], activityTypes: Seq[Activity.Type])(implicit destination: BacklogApiClient.Destination): Future[Seq[Seq[Activity]]] =
-    Future.sequence(userIds.map({
-      queryUserActivitiesByTypes(_, activityTypes)
-    }))
+    Future.sequence(userIds.map(queryUserActivitiesByTypes(_, activityTypes)))
 
   private def queryUserActivitiesByTypes(userId: Long, activityTypes: Seq[Activity.Type])(implicit destination: BacklogApiClient.Destination): Future[Seq[Activity]] =
-    Future.sequence(activityTypes.map({
-      backlogApiClient.queryUserActivities(userId, _)
-    }))
-      .map(_.flatten)
+    // 直列に実行するため、 foldLeft を用いる。
+    // 並列に実行すると、 API にアクセスを制限されてしまう。
+    activityTypes.foldLeft(Future.successful(Nil: Seq[Activity]))({ (activities$, activityType) =>
+      for {
+        activitiesA <- activities$
+        activitiesB <- backlogApiClient.queryUserActivities(userId, activityType)
+      } yield activitiesA ++ activitiesB
+    })
 
   private def evaluate(user: User, activities: Seq[Activity]) =
     EvaluationUser(
