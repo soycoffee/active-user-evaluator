@@ -1,9 +1,9 @@
-GET /projects/:projectKey/evaluation/implement controllers.evaluation.ImplementController.queryUsers(projectKey: String, count: Option[Int], sinceBeforeDays: Option[Int], apiKey: String)
 GET /projects/:projectKey/evaluation/management controllers.evaluation.ManagementController.queryUsers(projectKey: String, count: Option[Int], sinceBeforeDays: Option[Int], apiKey: String)
 GET /projects/:projectKey/evaluation/document controllers.evaluation.DocumentController.queryUsers(projectKey: String, count: Option[Int], sinceBeforeDays: Option[Int], apiKey: String)
-POST /projects/:projectKey/evaluation/implement/typetalk controllers.evaluation.ImplementController.typetalkWebhook(projectKey: String, apiKey: String)
+GET /projects/:projectKey/evaluation/implement controllers.evaluation.ImplementController.queryUsers(projectKey: String, count: Option[Int], sinceBeforeDays: Option[Int], apiKey: String)
 POST /projects/:projectKey/evaluation/management/typetalk controllers.evaluation.ManagementController.typetalkWebhook(projectKey: String, apiKey: String)
 POST /projects/:projectKey/evaluation/document/typetalk controllers.evaluation.DocumentController.typetalkWebhook(projectKey: String, apiKey: String)
+POST /projects/:projectKey/evaluation/implement/typetalk controllers.evaluation.ImplementController.typetalkWebhook(projectKey: String, apiKey: String)
 POST /projects/:projectKey/evaluation/all/typetalk controllers.evaluation.AllController.typetalkWebhook(projectKey: String, apiKey: String)
 GET /apiDefinitions controllers.ApiDefinitionController.query
 POST /apiDefinitions controllers.ApiDefinitionController.create
