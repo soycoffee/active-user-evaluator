@@ -21,7 +21,7 @@ class EvaluationAggregator @Inject()(
     } yield {
       evaluationUserArranger(
         (users zip usersActivities
-            .map(activityArranger(_, sinceBeforeDays))
+            .map(activityArranger(_, projectKey, sinceBeforeDays))
         ).map(tupled(evaluate)),
         count,
       )

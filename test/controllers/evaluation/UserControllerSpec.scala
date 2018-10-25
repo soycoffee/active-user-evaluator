@@ -46,6 +46,7 @@ trait UserControllerSpec[Controller <: InjectedController with UserController] e
             EvaluationActivity(
               Activity(
                 Activity.Type.CreateIssue,
+                null,
                 LocalDateTime.of(2000, 1, 1, 0, 0, 0),
                 Json.obj(
                   "key" -> "value",

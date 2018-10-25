@@ -13,16 +13,16 @@ class EvaluationUserArranger @Inject()(configuration: Configuration) {
     apply(evaluationUsers, count.getOrElse(defaultCount))
 
   def apply(evaluationUsers: Seq[EvaluationUser], count: Int): Seq[EvaluationUser] =
-    filterByPositivePoint(takeByCount(sortByPoint(evaluationUsers), count))
+    takeByCount(sortByPoint(filterByPositivePoint(evaluationUsers)), count)
+
+  private def filterByPositivePoint(evaluationUsers: Seq[EvaluationUser]): Seq[EvaluationUser] =
+    evaluationUsers.filter(_.point > 0)
 
   private def sortByPoint(evaluationUsers: Seq[EvaluationUser]): Seq[EvaluationUser] =
     evaluationUsers.sortBy(_.point * -1)
 
   private def takeByCount(evaluationUsers: Seq[EvaluationUser], count: Int): Seq[EvaluationUser] =
     evaluationUsers.take(count)
-
-  private def filterByPositivePoint(evaluationUsers: Seq[EvaluationUser]): Seq[EvaluationUser] =
-    evaluationUsers.filter(_.point > 0)
 
 }
 

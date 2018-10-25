@@ -29,7 +29,7 @@ class EvaluationAggregatorSpec extends PlaySpec with GuiceOneServerPerSuite with
     import ArgumentMatchers.any
     val activityArranger = mock[ActivityArranger]
     val evaluationUserArranger = mock[EvaluationUserArranger]
-    Mockito.when(activityArranger(any, any[Option[Int]])) thenAnswer (_.getArgument(0))
+    Mockito.when(activityArranger(any, any, any[Option[Int]])) thenAnswer (_.getArgument(0))
     Mockito.when(evaluationUserArranger(any, any[Option[Int]])) thenAnswer (_.getArgument(0))
     new EvaluationAggregator(
       backlogApiClient,
@@ -45,9 +45,9 @@ class EvaluationAggregatorSpec extends PlaySpec with GuiceOneServerPerSuite with
       User(2, null, null),
     )
     val mockActivities = Seq(
-      Activity(Activity.Type.CreateIssue, null, null),
-      Activity(Activity.Type.UpdateIssue, null, null),
-      Activity(Activity.Type.CreateIssueComment, null, null),
+      Activity(Activity.Type.CreateIssue, null, null, null),
+      Activity(Activity.Type.UpdateIssue, null, null, null),
+      Activity(Activity.Type.CreateIssueComment, null, null, null),
     )
     val argActivityTypes = Seq(
       Activity.Type.CreateWiki,
@@ -81,7 +81,7 @@ class EvaluationAggregatorSpec extends PlaySpec with GuiceOneServerPerSuite with
   "queryEvaluationUsers users = Nil" in {
     val mockUsers = Nil
     val mockActivities = Seq(
-      Activity(Activity.Type.CreateIssue, null, null),
+      Activity(Activity.Type.CreateIssue, null, null, null),
     )
     val argActivityTypes = Seq(
       Activity.Type.CreateWiki,
@@ -99,7 +99,7 @@ class EvaluationAggregatorSpec extends PlaySpec with GuiceOneServerPerSuite with
       User(1, null, null),
     )
     val mockActivities = Seq(
-      Activity(Activity.Type.CreateIssue, null, null),
+      Activity(Activity.Type.CreateIssue, null, null, null),
     )
     val argActivityTypes = Nil
     val backlogApiClient = initializeMock(mockUsers, mockActivities)
@@ -118,7 +118,7 @@ class EvaluationAggregatorSpec extends PlaySpec with GuiceOneServerPerSuite with
       User(1, null, null),
     )
     val mockActivities = Seq(
-      Activity(Activity.Type.CreateGitPush, null, Json.obj(
+      Activity(Activity.Type.CreateGitPush, null, null, Json.obj(
         "revision_count" -> 2,
       )),
     )

@@ -7,7 +7,7 @@ import play.api.libs.json.Reads._
 import play.api.libs.functional.syntax._
 import play.api.libs.json.{JsObject, Reads}
 
-case class Activity(`type`: Activity.Type, created: LocalDateTime, content: JsObject)
+case class Activity(`type`: Activity.Type, projectKey: String, created: LocalDateTime, content: JsObject)
 
 object Activity {
 
@@ -63,14 +63,9 @@ object Activity {
 
   implicit val responseReads: Reads[Activity] = (
     (__ \ "type").read[Int].map(id => Type.Values.find(_.id == id)).filter(_.isDefined).map(_.get) and
+    (__ \ "project" \ "projectKey").read[String] and
     (__ \ "created").read(Reads.DefaultLocalDateTimeReads) and
     (__ \ "content").read[JsObject]
   ) (Activity.apply _)
-
-  implicit val writes: OWrites[Activity] = (
-    (__ \ "type").write[String].contramap[Type](_.toString) and
-    (__ \ "created").write(Writes.DefaultLocalDateTimeWrites) and
-    (__ \ "content").write[JsObject]
-  ) (unlift(Activity.unapply))
 
 }

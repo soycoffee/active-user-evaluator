@@ -2,7 +2,7 @@ package models
 
 import java.time.LocalDateTime
 
-import play.api.libs.json.{JsObject, Json, Writes}
+import play.api.libs.json._
 
 case class EvaluationActivity(activity: Activity, point: Int) {
 
@@ -15,8 +15,10 @@ case class EvaluationActivity(activity: Activity, point: Int) {
 object EvaluationActivity {
 
   implicit val writes: Writes[EvaluationActivity] = Writes[EvaluationActivity]({
-    case EvaluationActivity(activity, point) =>
-      Json.toJsObject(activity) - "content" ++ Json.obj(
+    case EvaluationActivity(Activity(_type, _, created, _), point) =>
+      Json.obj(
+        "type" -> _type.toString,
+        "created" -> created,
         "point" -> point,
       )
   })

@@ -57,6 +57,9 @@ class BacklogApiClientSpec extends PlaySpec with GuiceOneServerPerSuite with Moc
         Json.obj(
           "type" -> 1,
           "created" -> "2000-01-01T00:00:00Z",
+          "project" -> Json.obj(
+            "projectKey" -> "projectKey",
+          ),
           "content" -> Json.obj(
             "key" -> "value",
           ),
@@ -68,6 +71,7 @@ class BacklogApiClientSpec extends PlaySpec with GuiceOneServerPerSuite with Moc
     activities mustBe Seq(
       Activity(
         Activity.Type.CreateIssue,
+        "projectKey",
         LocalDateTime.of(2000, 1, 1, 0, 0, 0),
         Json.obj(
           "key" -> "value",

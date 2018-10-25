@@ -13,6 +13,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class BacklogApiClient @Inject()(ws: WSClient)(implicit ec: ExecutionContext) {
 
   import BacklogApiClient._
+  import User.format
 
   private val logger = Logger(this.getClass)
 
