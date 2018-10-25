@@ -24,15 +24,15 @@ class BacklogApiClient @Inject()(ws: WSClient)(implicit ec: ExecutionContext) {
   def queryProjectUsersAsJson(projectKey: String)(implicit destination: Destination): Future[JsValue] =
     access("GET", makeApiUrl(s"/projects/$projectKey/users"))
 
-  def queryUserActivities(userId: Long, `type`: Activity.Type)(implicit destination: Destination): Future[Seq[Activity]] =
-    queryUserActivitiesAsJson(userId, `type`)
+  def queryUserActivities(userId: Long, types: Seq[Activity.Type])(implicit destination: Destination): Future[Seq[Activity]] =
+    queryUserActivitiesAsJson(userId, types)
       .map(_.as[Seq[Activity]])
 
-  def queryUserActivitiesAsJson(userId: Long, `type`: Activity.Type)(implicit destination: Destination): Future[JsValue] =
+  def queryUserActivitiesAsJson(userId: Long, types: Seq[Activity.Type])(implicit destination: Destination): Future[JsValue] =
     access("GET", makeApiUrl(
       s"/users/$userId/activities",
-      "activityTypeId[]" -> s"${`type`.id}",
-      "count" -> "100",
+      types.map(`type` => "activityTypeId[]" -> s"${`type`.id}")
+        .:+("count" -> "100"): _*,
     ))
 
   private def access(method: String, url: String): Future[JsValue] = {
@@ -43,9 +43,6 @@ class BacklogApiClient @Inject()(ws: WSClient)(implicit ec: ExecutionContext) {
       .execute()
       .map(_.body[JsValue])
   }
-
-  private def apiUrl(domain: String, endPoint: String) =
-    s"https://$domain/api/v2$endPoint"
 
   // WsClient で Query String を付加するとエンコードされてしまうため、直接URLに含める。
   private def makeApiUrl(path: String, queryStringParameters: (String, String)*)(implicit destination: Destination) =

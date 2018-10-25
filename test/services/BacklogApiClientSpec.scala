@@ -67,7 +67,7 @@ class BacklogApiClientSpec extends PlaySpec with GuiceOneServerPerSuite with Moc
       ),
     )
     val backlogApiClient = new BacklogApiClient(wsClient)
-    val activities = await(backlogApiClient.queryUserActivities(1, Activity.Type.CreateIssue))
+    val activities = await(backlogApiClient.queryUserActivities(1, Seq(Activity.Type.CreateIssue, Activity.Type.UpdateIssue)))
     activities mustBe Seq(
       Activity(
         Activity.Type.CreateIssue,
@@ -78,7 +78,7 @@ class BacklogApiClientSpec extends PlaySpec with GuiceOneServerPerSuite with Moc
         ),
       ),
     )
-    Mockito.verify(wsClient).url(ArgumentMatchers.eq("https://example.com/api/v2/users/1/activities?activityTypeId[]=1&count=100&apiKey=key"))
+    Mockito.verify(wsClient).url(ArgumentMatchers.eq("https://example.com/api/v2/users/1/activities?activityTypeId[]=1&activityTypeId[]=2&count=100&apiKey=key"))
     Mockito.verify(wsRequest).withMethod(ArgumentMatchers.eq("GET"))
   }
 

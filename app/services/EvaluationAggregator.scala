@@ -37,11 +37,10 @@ class EvaluationAggregator @Inject()(
     backlogApiClient.queryProjectUsers(projectKey)
 
   private def queryUsersActivities(activityTypes: Seq[Activity.Type], userIds: Seq[Long])(implicit destination: BacklogApiClient.Destination): Future[Seq[Seq[Activity]]] =
-    futureSerializer[Long, Seq[Activity]](userIds)(queryUserActivitiesByTypes(activityTypes, _))
-
-  private def queryUserActivitiesByTypes(activityTypes: Seq[Activity.Type], userId: Long)(implicit destination: BacklogApiClient.Destination): Future[Seq[Activity]] =
-    futureSerializer[Activity.Type, Seq[Activity]](activityTypes)(backlogApiClient.queryUserActivities(userId, _))
-      .map(_.flatten)
+    if (activityTypes.nonEmpty)
+      futureSerializer[Long, Seq[Activity]](userIds)(backlogApiClient.queryUserActivities(_, activityTypes))
+    else
+      Future.successful(Seq.fill(userIds.length)(Nil))
 
   private def evaluate(user: User, activities: Seq[Activity]) =
     EvaluationUser(
