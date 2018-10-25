@@ -1,10 +1,12 @@
 package services.typetalk
 
+import javax.inject.Singleton
 import models._
 import play.api.libs.json.{JsObject, Json}
 
 import scala.Function.tupled
 
+@Singleton
 class WebhookResponseBodyBuilder {
 
   private val Separation = "----------------"
