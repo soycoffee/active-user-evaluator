@@ -37,6 +37,7 @@ class EvaluationAggregator @Inject()(
     // 直列に実行するため、 foldLeft を用いる。
     // 並列に実行すると、 API にアクセスを制限されてしまう。
     activityTypes.foldLeft(Future.successful(Nil: Seq[Activity]))({ (activities$, activityType) =>
+      Thread.sleep(500)
       for {
         activitiesA <- activities$
         activitiesB <- backlogApiClient.queryUserActivities(userId, activityType)
