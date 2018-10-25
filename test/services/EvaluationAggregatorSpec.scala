@@ -1,6 +1,5 @@
 package services
 
-import akka.actor.ActorSystem
 import models.{Activity, User}
 import org.mockito._
 import org.scalatest.mockito.MockitoSugar
@@ -35,11 +34,11 @@ class EvaluationAggregatorSpec extends PlaySpec with GuiceOneServerPerSuite with
     Mockito.when(evaluationUserArranger(any, any[Option[Int]])) thenAnswer (_.getArgument(0))
     new EvaluationAggregator(
       app.injector.instanceOf[Configuration],
-      app.injector.instanceOf[ActorSystem],
       backlogApiClient,
       new ActivityPointJudge(),
       activityArranger,
       evaluationUserArranger,
+      app.injector.instanceOf[FutureSerializer],
     )
   }
 

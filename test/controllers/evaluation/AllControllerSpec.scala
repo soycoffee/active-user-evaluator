@@ -6,13 +6,14 @@ import org.mockito.Mockito
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.Configuration
 import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.mvc._
 import play.api.test.Helpers._
 import play.api.test._
 import services.typetalk.WebhookResponseBodyBuilder
-import services.{EvaluationAggregator, UseApiDestination}
+import services.{EvaluationAggregator, FutureSerializer, UseApiDestination}
 import test.helpers.NoSlick
 
 class AllControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with NoSlick {
@@ -28,7 +29,13 @@ class AllControllerSpec extends PlaySpec with GuiceOneServerPerSuite with Mockit
   }
 
   private def initializeTarget(useApiDestination: UseApiDestination, evaluationAggregator: EvaluationAggregator): AllController = {
-    val controller = new AllController(useApiDestination, evaluationAggregator, new WebhookResponseBodyBuilder())
+    val controller = new AllController(
+      app.injector.instanceOf[Configuration],
+      useApiDestination,
+      evaluationAggregator,
+      new WebhookResponseBodyBuilder(),
+      app.injector.instanceOf[FutureSerializer],
+    )
     controller.setControllerComponents(app.injector.instanceOf[ControllerComponents])
     controller
   }
