@@ -53,7 +53,7 @@ class AllControllerSpec extends PlaySpec with GuiceOneServerPerSuite with Mockit
         ),
       )
       val controller = initializeTarget(useApiDestination, evaluationAggregator)
-      val result = controller.typetalkWebhook("projectId", "apiKey")(request)
+      val result = controller.typetalkWebhook("projectKey", "apiKey")(request)
       Helpers.status(result) mustBe Status.OK
       Helpers.contentAsJson(result) mustBe Json.obj(
         "message" ->
@@ -77,9 +77,9 @@ class AllControllerSpec extends PlaySpec with GuiceOneServerPerSuite with Mockit
           """.stripMargin.trim,
         "replyTo" -> 1,
       )
-      Mockito.verify(evaluationAggregator).queryEvaluationUsers(BaseHelper.managementActivityTypes, "projectId", None, None)
-      Mockito.verify(evaluationAggregator).queryEvaluationUsers(BaseHelper.documentActivityTypes, "projectId", None, None)
-      Mockito.verify(evaluationAggregator).queryEvaluationUsers(BaseHelper.implementActivityTypes, "projectId", None, None)
+      Mockito.verify(evaluationAggregator).queryEvaluationUsers(BaseHelper.managementActivityTypes, "projectKey", None, None)
+      Mockito.verify(evaluationAggregator).queryEvaluationUsers(BaseHelper.documentActivityTypes, "projectKey", None, None)
+      Mockito.verify(evaluationAggregator).queryEvaluationUsers(BaseHelper.implementActivityTypes, "projectKey", None, None)
     }
 
   }

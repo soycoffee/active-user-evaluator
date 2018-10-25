@@ -16,12 +16,12 @@ class BacklogApiClient @Inject()(ws: WSClient)(implicit ec: ExecutionContext) {
 
   private val logger = Logger(this.getClass)
 
-  def queryProjectUsers(projectId: String)(implicit destination: Destination): Future[Seq[User]] =
-    queryProjectUsersAsJson(projectId)
+  def queryProjectUsers(projectKey: String)(implicit destination: Destination): Future[Seq[User]] =
+    queryProjectUsersAsJson(projectKey)
       .map(_.as[Seq[User]])
 
-  def queryProjectUsersAsJson(projectId: String)(implicit destination: Destination): Future[JsValue] =
-    access("GET", makeApiUrl(s"/projects/$projectId/users"))
+  def queryProjectUsersAsJson(projectKey: String)(implicit destination: Destination): Future[JsValue] =
+    access("GET", makeApiUrl(s"/projects/$projectKey/users"))
 
   def queryUserActivities(userId: Long, `type`: Activity.Type)(implicit destination: Destination): Future[Seq[Activity]] =
     queryUserActivitiesAsJson(userId, `type`)

@@ -58,7 +58,7 @@ trait TypetalkControllerSpec[Controller <: TypetalkController with InjectedContr
         ),
       )
       val controller = initializeTarget(useApiDestination, evaluationAggregator)
-      val result = controller.typetalkWebhook("projectId", "apiKey")(request)
+      val result = controller.typetalkWebhook("projectKey", "apiKey")(request)
       Helpers.status(result) mustBe Status.OK
       Helpers.contentAsJson(result) mustBe Json.obj(
         "message" ->
@@ -72,7 +72,7 @@ trait TypetalkControllerSpec[Controller <: TypetalkController with InjectedContr
           """.stripMargin.trim,
         "replyTo" -> 1,
       )
-      Mockito.verify(evaluationAggregator).queryEvaluationUsers(targetActivityTypes, "projectId", None, None)
+      Mockito.verify(evaluationAggregator).queryEvaluationUsers(targetActivityTypes, "projectKey", None, None)
     }
 
   }

@@ -14,9 +14,9 @@ class EvaluationAggregator @Inject()(
                                       evaluationUserArranger: EvaluationUserArranger,
                                     )(implicit val ec: ExecutionContext) {
 
-  def queryEvaluationUsers(activityTypes: Seq[Activity.Type], projectId: String, count: Option[Int], sinceBeforeDays: Option[Int])(implicit destination: BacklogApiClient.Destination): Future[Seq[EvaluationUser]] =
+  def queryEvaluationUsers(activityTypes: Seq[Activity.Type], projectKey: String, count: Option[Int], sinceBeforeDays: Option[Int])(implicit destination: BacklogApiClient.Destination): Future[Seq[EvaluationUser]] =
     for {
-      users <- queryUsers(projectId)
+      users <- queryUsers(projectKey)
       usersActivities <- queryUsersActivities(activityTypes, users.map(_.id))
     } yield {
       evaluationUserArranger(
@@ -27,8 +27,8 @@ class EvaluationAggregator @Inject()(
       )
     }
 
-  private def queryUsers(projectId: String)(implicit destination: BacklogApiClient.Destination): Future[Seq[User]] =
-    backlogApiClient.queryProjectUsers(projectId)
+  private def queryUsers(projectKey: String)(implicit destination: BacklogApiClient.Destination): Future[Seq[User]] =
+    backlogApiClient.queryProjectUsers(projectKey)
 
   private def queryUsersActivities(activityTypes: Seq[Activity.Type], userIds: Seq[Long])(implicit destination: BacklogApiClient.Destination): Future[Seq[Seq[Activity]]] =
     Future.sequence(userIds.map(queryUserActivitiesByTypes(activityTypes, _)))

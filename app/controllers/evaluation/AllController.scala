@@ -25,12 +25,12 @@ class AllController @Inject()(
   private lazy val activityTypeGroupLabels: Seq[String] =
     activityTypeGroupLabelKeys.map(messagesApi(_))
 
-  def typetalkWebhook(projectId: String, apiKey: String): Action[WebhookRequestBody] = Action.async(parse.json[WebhookRequestBody]) { implicit request =>
+  def typetalkWebhook(projectKey: String, apiKey: String): Action[WebhookRequestBody] = Action.async(parse.json[WebhookRequestBody]) { implicit request =>
     val WebhookRequestBody(count, sinceBeforeDays, replyFrom) = request.body
     useApiDestination(apiKey) { implicit destination =>
       Future.sequence(
         groupedActivityTypes
-          .map(evaluationAggregator.queryEvaluationUsers(_, projectId, count, sinceBeforeDays))
+          .map(evaluationAggregator.queryEvaluationUsers(_, projectKey, count, sinceBeforeDays))
       )
         .map(_ zip activityTypeGroupLabels)
         .map(webhookResponseBuilder(destination.domain, _, replyFrom))

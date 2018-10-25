@@ -25,10 +25,10 @@ trait TypetalkController extends BaseController with HasTargetActivityTypes {
   lazy val typetalkMessageLabel : String =
     messagesApi(typetalkMessageLabelKey)
 
-  def typetalkWebhook(projectId: String, apiKey: String): Action[WebhookRequestBody] = Action.async(parse.json[WebhookRequestBody]) { implicit request =>
+  def typetalkWebhook(projectKey: String, apiKey: String): Action[WebhookRequestBody] = Action.async(parse.json[WebhookRequestBody]) { implicit request =>
     val WebhookRequestBody(count, sinceBeforeDays, replyFrom) = request.body
     useApiDestination(apiKey) { implicit destination =>
-      evaluationAggregator.queryEvaluationUsers(targetActivityTypes, projectId, count, sinceBeforeDays)
+      evaluationAggregator.queryEvaluationUsers(targetActivityTypes, projectKey, count, sinceBeforeDays)
         .map(webhookResponseBuilder(destination.domain, _, typetalkMessageLabel, replyFrom))
         .map(Ok(_))
     }

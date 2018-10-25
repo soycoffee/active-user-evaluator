@@ -57,7 +57,7 @@ trait UserControllerSpec[Controller <: InjectedController with UserController] e
         ),
       ))
       val controller = initializeTarget(useApiDestination, evaluationAggregator)
-      val result = controller.queryUsers("projectId", Some(1), Some(1), "apiKey")(request)
+      val result = controller.queryUsers("projectKey", Some(1), Some(1), "apiKey")(request)
       Helpers.status(result) mustBe Status.OK
       Helpers.contentAsJson(result) mustBe Json.arr(
         Json.obj(
@@ -74,7 +74,7 @@ trait UserControllerSpec[Controller <: InjectedController with UserController] e
           ),
         ),
       )
-      Mockito.verify(evaluationAggregator).queryEvaluationUsers(targetActivityTypes, "projectId", Some(1), Some(1))(apiDestination)
+      Mockito.verify(evaluationAggregator).queryEvaluationUsers(targetActivityTypes, "projectKey", Some(1), Some(1))(apiDestination)
     }
 
   }

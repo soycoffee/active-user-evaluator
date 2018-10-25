@@ -13,9 +13,9 @@ trait UserController extends BaseController with HasTargetActivityTypes {
 
   private implicit lazy val ec: ExecutionContext = defaultExecutionContext
 
-  def queryUsers(projectId: String, count: Option[Int], sinceBeforeDays: Option[Int], apiKey: String): Action[AnyContent] = Action.async {
+  def queryUsers(projectKey: String, count: Option[Int], sinceBeforeDays: Option[Int], apiKey: String): Action[AnyContent] = Action.async {
     useApiDestination(apiKey) { implicit destination =>
-      evaluationAggregator.queryEvaluationUsers(targetActivityTypes, projectId, count, sinceBeforeDays)
+      evaluationAggregator.queryEvaluationUsers(targetActivityTypes, projectKey, count, sinceBeforeDays)
         .map(Json.toJson(_))
         .map(Ok(_))
     }
