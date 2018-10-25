@@ -16,7 +16,12 @@ Backlog ユーザーの過去 N 日間の活動を集計し、活動が多いユ
 
 # 他に利用する技術
 
-* MySQL: APIキーなどの保存
+* PostgreSQL: APIキーなどの保存
 * Slick: データベースの操作
 * ScalaTest: ユニットテスト
+* Mockito: テストモック
 * Heroku: デプロイ先
+
+# データベース構成
+
+conf/evolutions 参照
