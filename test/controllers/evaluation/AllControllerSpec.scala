@@ -1,7 +1,7 @@
 package controllers.evaluation
 
+import models.EvaluationUser
 import models.typetalk.WebhookRequestBody
-import models.{EvaluationActivity, EvaluationUser, User}
 import org.mockito.Mockito
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
@@ -42,21 +42,13 @@ class AllControllerSpec extends PlaySpec with GuiceOneServerPerSuite with Mockit
 
   "typetalkWebhook" should {
 
-    def buildEvaluationUser(userId: String, name: String, point: Int) =
-      EvaluationUser(
-        User(0, userId = userId, name = name),
-        Seq(
-          EvaluationActivity(null, point = point),
-        ),
-      )
-
     "OK" in {
       val (request, useApiDestination, evaluationAggregator) = initializeMock(
         WebhookRequestBody("", 1),
         Seq(
-          buildEvaluationUser("a", "A", 3),
-          buildEvaluationUser("b", "B", 2),
-          buildEvaluationUser("c", "C", 1),
+          BaseHelper.buildEvaluationUser(Some("a"), "A", 3),
+          BaseHelper.buildEvaluationUser(Some("b"), "B", 2),
+          BaseHelper.buildEvaluationUser(None, "C", 1),
         ),
       )
       val controller = initializeTarget(useApiDestination, evaluationAggregator)
@@ -69,17 +61,17 @@ class AllControllerSpec extends PlaySpec with GuiceOneServerPerSuite with Mockit
             |${BaseHelper.managementTypetalkMessageLabel}
             |1. [A](https://example.com/user/a) ( 3 points )
             |2. [B](https://example.com/user/b) ( 2 points )
-            |3. [C](https://example.com/user/c) ( 1 points )
+            |3. C ( 1 points )
             |----------------
             |${BaseHelper.documentTypetalkMessageLabel}
             |1. [A](https://example.com/user/a) ( 3 points )
             |2. [B](https://example.com/user/b) ( 2 points )
-            |3. [C](https://example.com/user/c) ( 1 points )
+            |3. C ( 1 points )
             |----------------
             |${BaseHelper.implementTypetalkMessageLabel}
             |1. [A](https://example.com/user/a) ( 3 points )
             |2. [B](https://example.com/user/b) ( 2 points )
-            |3. [C](https://example.com/user/c) ( 1 points )
+            |3. C ( 1 points )
             |----------------
           """.stripMargin.trim,
         "replyTo" -> 1,

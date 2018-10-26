@@ -25,7 +25,7 @@ class WebhookResponseBodyBuilder {
 
   private def message(domain: String, label: String, evaluationUsers: Seq[EvaluationUser]): String =
     (evaluationUsers zip Stream.from(1)).map(tupled((evaluationUser, order) =>
-      s"$order. [${evaluationUser.name}](https://$domain/user/${evaluationUser.userId}) ( ${evaluationUser.point} points )"
+      s"$order. ${userNameView(domain)(evaluationUser)} ( ${evaluationUser.point} points )"
     ))
       .+:(label)
       .mkString("\n")
@@ -35,6 +35,11 @@ class WebhookResponseBodyBuilder {
       for ((evaluationUsers, label) <- groupedEvaluationUsersWithLabel)
         yield message(domain, label, evaluationUsers)
     ).mkString(s"$Separation\n", s"\n$Separation\n", s"\n$Separation")
+
+  private def userNameView(domain: String): EvaluationUser => String = {
+    case EvaluationUser(User(_, Some(userId), name), _) => s"[$name](https://$domain/user/$userId)"
+    case EvaluationUser(User(_, None, name), _) => name
+  }
 
 }
 

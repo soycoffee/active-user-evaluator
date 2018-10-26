@@ -5,7 +5,7 @@ import play.api.libs.json.{Json, Writes}
 case class EvaluationUser(user: User, activities: Seq[EvaluationActivity]) {
 
   def id: Long = user.id
-  def userId: String = user.userId
+  def userId: Option[String] = user.userId
   def name: String = user.name
 
   val point: Int = activities.map(_.point).sum

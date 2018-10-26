@@ -1,8 +1,11 @@
 package controllers.evaluation
 
-import models.{Activity, EvaluationUser}
+import java.time.LocalDateTime
+
+import models.{Activity, EvaluationActivity, EvaluationUser, User}
 import org.mockito.{ArgumentMatchers, Mockito}
 import org.scalatest.mockito.MockitoSugar
+import play.api.libs.json.{JsObject, Json}
 import play.api.mvc._
 import services.{BacklogApiClient, EvaluationAggregator, UseApiDestination}
 
@@ -48,5 +51,14 @@ object BaseHelper extends MockitoSugar {
     Mockito.when(evaluationAggregator.queryEvaluationUsers(any(), any(), any(), any())(any())) thenReturn Future.successful(evaluationUsers)
     (useApiDestination, evaluationAggregator)
   }
+
+  def buildEvaluationUser(userId: Option[String], name: String, point: Int) =
+    EvaluationUser(User(id = 0, userId = userId, name = name), Seq(EvaluationActivity(activity = null, point = point)))
+
+  def buildEvaluationUser(id: Long, userId: Option[String], name: String, activities: Seq[EvaluationActivity]) =
+    EvaluationUser(User(id = id, userId = userId, name = name), activities)
+
+  def buildEvaluationActivity(`type`: Activity.Type, point: Int, created: LocalDateTime = LocalDateTime.of(2000, 1, 1, 0, 0, 0), content: JsObject = Json.obj("key" -> "value")) =
+    EvaluationActivity(Activity(`type` = `type`, projectKey = null, created = created, content = content), point)
 
 }

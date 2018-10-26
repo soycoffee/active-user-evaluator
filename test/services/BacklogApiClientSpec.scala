@@ -7,7 +7,7 @@ import org.mockito._
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.{JsNull, JsValue, Json}
 import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
 import play.api.test.Helpers._
 import test.helpers.NoSlick
@@ -37,15 +37,21 @@ class BacklogApiClientSpec extends PlaySpec with GuiceOneServerPerSuite with Moc
       Json.arr(
         Json.obj(
           "id" -> 1,
-          "userId" -> "userId",
-          "name" -> "name",
+          "userId" -> "userId1",
+          "name" -> "name1",
+        ),
+        Json.obj(
+          "id" -> 2,
+          "userId" -> JsNull,
+          "name" -> "name2",
         ),
       ),
     )
     val backlogApiClient = new BacklogApiClient(wsClient)
     val users = await(backlogApiClient.queryProjectUsers("1"))
     users mustBe Seq(
-      User(1, "userId", "name"),
+      User(1, Some("userId1"), "name1"),
+      User(2, None, "name2"),
     )
     Mockito.verify(wsClient).url(ArgumentMatchers.eq("https://example.com/api/v2/projects/1/users?apiKey=key"))
     Mockito.verify(wsRequest).withMethod(ArgumentMatchers.eq("GET"))

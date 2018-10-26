@@ -1,8 +1,6 @@
 package controllers.evaluation
 
-import java.time.LocalDateTime
-
-import models.{Activity, EvaluationActivity, EvaluationUser, User}
+import models.{Activity, EvaluationUser}
 import org.mockito.Mockito
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
@@ -40,22 +38,8 @@ trait UserControllerSpec[Controller <: InjectedController with UserController] e
 
     "OK" in  {
       val (request, useApiDestination, evaluationAggregator) = initializeMock(Seq(
-        EvaluationUser(
-          User(1, "userId", "name"),
-          Seq(
-            EvaluationActivity(
-              Activity(
-                Activity.Type.CreateIssue,
-                null,
-                LocalDateTime.of(2000, 1, 1, 0, 0, 0),
-                Json.obj(
-                  "key" -> "value",
-                ),
-              ),
-              1,
-            ),
-          ),
-        ),
+        BaseHelper.buildEvaluationUser(1, Some("userId1"), "name1", Seq(BaseHelper.buildEvaluationActivity(Activity.Type.CreateIssue, 1))),
+        BaseHelper.buildEvaluationUser(2, None, "name2", Seq(BaseHelper.buildEvaluationActivity(Activity.Type.UpdateIssue, 2))),
       ))
       val controller = initializeTarget(useApiDestination, evaluationAggregator)
       val result = controller.queryUsers("projectKey", Some(1), Some(1), "apiKey")(request)
@@ -63,14 +47,26 @@ trait UserControllerSpec[Controller <: InjectedController with UserController] e
       Helpers.contentAsJson(result) mustBe Json.arr(
         Json.obj(
           "id" -> 1,
-          "userId" -> "userId",
-          "name" -> "name",
+          "userId" -> "userId1",
+          "name" -> "name1",
           "point" -> 1,
           "activities" -> Json.arr(
             Json.obj(
               "type" -> "CreateIssue",
               "created" -> "2000-01-01T00:00:00",
               "point" -> 1,
+            ),
+          ),
+        ),
+        Json.obj(
+          "id" -> 2,
+          "name" -> "name2",
+          "point" -> 2,
+          "activities" -> Json.arr(
+            Json.obj(
+              "type" -> "UpdateIssue",
+              "created" -> "2000-01-01T00:00:00",
+              "point" -> 2,
             ),
           ),
         ),
